@@ -2,7 +2,7 @@ from app.db import getSession
 from app.models import Items, ItemsCreate, ItemsDetails
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
-from ..crud.items import ItemCrud as crud
+from .crud import ItemCrud as crud
 
 router = APIRouter()
 
@@ -28,9 +28,9 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
         raise HTTPException(status_code=500) from e
 
 
-@router.get("/items/search")
-async def search_items(session: AsyncSession = Depends(getSession)):
-    pass
+# @router.get("/items/search")
+# async def search_items(session: AsyncSession = Depends(getSession)):
+#     pass
 
 
 @router.post("/items", status_code=201)
