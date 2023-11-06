@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
+
 const items = ref([
   {
     barcode: '100000000011',
@@ -29,6 +30,30 @@ const items = ref([
     in_stock: 25,
     price: 499.99,
     sold: 6
+  },
+  {
+    barcode: '100000000014',
+    item: 'Gaming Chair',
+    description: 'Comfortable gaming chair for gamers',
+    in_stock: 19,
+    price: 159.99,
+    sold: 6
+  },
+  {
+    barcode: '100000000015',
+    item: 'Refrigerator',
+    description: 'Spacious refrigerator for your kitchen',
+    in_stock: 10,
+    price: 899.95,
+    sold: 2
+  },
+  {
+    barcode: '100000000016',
+    item: 'Grill',
+    description: 'Charcoal grill for outdoor cooking',
+    in_stock: 18,
+    price: 149.99,
+    sold: 9
   }
 ])
 
@@ -38,7 +63,13 @@ async function addToCart(item) {
 }
 
 function inCart(barcode) {
-  let item = store.getCountFromCart(barcode)
+  try {
+    let item = carts[currentCart].items[barcode]
+    console.log(item)
+    if (item) {
+      return true
+    }
+  } catch (error) {}
 }
 
 function removeFromCart(item) {
@@ -47,8 +78,8 @@ function removeFromCart(item) {
 </script>
 
 <template>
-  <div class="container">
-    <v-card class="mx-auto" max-width="400" v-for="(item, index) in items" :key="index">
+  <div class="d-flex flex-wrap justify-space-between">
+    <v-card class="mx-auto mb-5" max-width="400" v-for="(item, index) in items" :key="index">
       <v-img
         class="align-end text-white"
         height="200"
@@ -67,18 +98,19 @@ function removeFromCart(item) {
 
       <v-card-actions class="d-flex justify-space-between">
         <v-btn w-auto color="orange"> $ {{ item.price }} </v-btn>
-        <div class="d-flex align-center" v-if="carts[currentCart].items[item.barcode]">
-          <v-btn color="orange" @click="removeFromCart(item)" icon="mdi-minus"></v-btn>
-          <p readonly>{{ carts[currentCart].items[item.barcode].qty }}</p>
-          <v-btn color="orange" @click="addToCart(item)" icon="mdi-plus"> </v-btn>
-        </div>
+
+        <template v-if="carts[currentCart]">
+          <div class="d-flex align-center" v-if="carts[currentCart].items[item.barcode]">
+            <v-btn color="orange" @click="removeFromCart(item)" icon="mdi-minus"></v-btn>
+            <p readonly>{{ carts[currentCart].items[item.barcode].qty }}</p>
+            <v-btn color="orange" @click="addToCart(item)" icon="mdi-plus"> </v-btn>
+          </div>
+
+          <v-btn v-else color="orange" @click="addToCart(item)"> Add to cart </v-btn>
+        </template>
         <v-btn v-else color="orange" @click="addToCart(item)"> Add to cart </v-btn>
       </v-card-actions>
     </v-card>
-  </div>
-  <div>
-    Items in Cart
-    {{ carts[currentCart].items }}
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import MainBar from './components/MainBar.vue';
 </script>
 
 <template>
@@ -10,16 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
         rel="stylesheet"
       />
     </header>
-    <v-app-bar>
-      Home
-      <template v-slot:append>
-        <v-btn icon="mdi-heart"></v-btn>
-
-        <v-btn icon="mdi-magnify"></v-btn>
-
-        <v-btn icon="mdi-dots-vertical"></v-btn>
-      </template>
-    </v-app-bar>
+   <MainBar></MainBar>
     <div class="main">
       <RouterView />
     </div>

@@ -21,7 +21,8 @@ export const useCartStore = defineStore('cart', {
       } else {
         let cart = {
           items: {},
-          total: 0
+          total: 0,
+          total_items:0
         }
         this.setCurrentCart()
         this.carts[this.currentCart] = cart
@@ -46,7 +47,7 @@ export const useCartStore = defineStore('cart', {
         this.carts[this.currentCart].items[item.barcode].qty++
       }
       this.carts[this.currentCart].total += item.price
-
+      this.carts[this.currentCart].total_items++
     },
     removeOneFromCart(item) {
       let barcode = item.barcode
@@ -58,6 +59,7 @@ export const useCartStore = defineStore('cart', {
         this.carts[this.currentCart].items[barcode].qty--
       }
       this.carts[this.currentCart].total -= item.price
+      this.carts[this.currentCart].total_items--
       console.log('finish remove')
     },
     inCart(barcode) {
