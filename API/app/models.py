@@ -1,7 +1,7 @@
 from typing import Optional, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
-
+import uuid 
 
 ########### Items SQLModel ###########
 class ItemsBase(SQLModel):
@@ -12,21 +12,20 @@ class ItemsBase(SQLModel):
 
 
 class ItemsDetails(ItemsBase):
-    """For details page and reporting"""
+    """For details page, reporting and adding items to database"""
     barcode: str
     in_stock: int
     sold: int
-
 
 class Items(ItemsDetails, table=True):
     """for database"""
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
 
 
-class ItemsCreate(ItemsDetails):
-    """Model for Item creation"""
-    pass
-
+class OrderItem():
+    """Only for order creation"""
+    barcode: str
+    qty: int
 
 ########### Orders SQLModel ###########
 class OrderBase(SQLModel):
@@ -42,12 +41,13 @@ class OrderBase(SQLModel):
 class Order(OrderBase, table=True):
     """Order table for database"""
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
+    order_id: str = Field(nullable=False, unique=True)
     order_items: List["ItemsByOrder"] = Relationship(back_populates='order')
 
 
 class OrderCreate(OrderBase):
     """Order creation must include at least 1 item"""
-    items: List[Items]
+    items: List[OrderItem]
 
 
 ########### OrderXItems SQLModel ###########

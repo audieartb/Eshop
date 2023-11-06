@@ -3,7 +3,7 @@ services:
     build: ./API
     command: uvicorn app.main:app --host 0.0.0.0
     volumes:
-      - ./API:/app
+      - ./API:/code
     ports:
       - 8008:8000
     restart: always
