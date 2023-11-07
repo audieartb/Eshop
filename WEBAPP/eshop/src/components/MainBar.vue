@@ -12,7 +12,12 @@ const { currentCart } = storeToRefs(store)
 <template>
   <div>
     <v-app-bar>
-      <div class="text-h3 ml-5">Welcome</div>
+    
+        <router-link to="/">
+          <div class="text-h3 ml-5">
+            Welcome
+          </div></router-link>
+      
       <template v-slot:append>
         <v-btn icon="mdi-magnify"></v-btn>
 

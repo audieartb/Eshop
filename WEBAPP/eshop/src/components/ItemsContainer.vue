@@ -6,6 +6,7 @@ const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 
+
 const items = ref([
   {
     barcode: '100000000011',

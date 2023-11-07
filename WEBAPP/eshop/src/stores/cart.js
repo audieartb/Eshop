@@ -12,6 +12,9 @@ export const useCartStore = defineStore('cart', {
   getters: {
     itemsInCart(state) {
       return !state.currentCart ? null : state.carts[state.currentCart]
+    },
+    justItems(state){
+      return !state.currentCart ? null : state.carts[state.currentCart].items
     }
   },
   actions: {
@@ -40,7 +43,9 @@ export const useCartStore = defineStore('cart', {
         let newItem = {
           barcode: item.barcode,
           qty: 1,
-          price: item.price
+          price: item.price,
+          img: "https://cdn.vuetifyjs.com/images/cards/docks.jpg",
+          title: item.item,
         }
         this.carts[this.currentCart].items[item.barcode] = newItem
       } else {
@@ -48,6 +53,7 @@ export const useCartStore = defineStore('cart', {
       }
       this.carts[this.currentCart].total += item.price
       this.carts[this.currentCart].total_items++
+      
     },
     removeOneFromCart(item) {
       let barcode = item.barcode
