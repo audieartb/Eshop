@@ -2,14 +2,15 @@ from datetime import date
 import string
 import random
 from ..db import getSession
-from ..models import Order,OrderCreate, OrderItem
+from ..models import Order,OrderBase, OrderItem
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 
 
-async def create_order(order:OrderCreate, session: AsyncSession):
+async def create_order(order:OrderBase, session: AsyncSession):
     
     order_id = generateOrderId()
+        
 
     for item in order.items:
         pass

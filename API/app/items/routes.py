@@ -1,5 +1,5 @@
 from app.db import getSession
-from app.models import Items, ItemsCreate, ItemsDetails
+from app.models import Items, ItemsDetails, ItemsBase
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
 from .crud import ItemCrud as crud
@@ -34,7 +34,7 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
 
 
 @router.post("/items", status_code=201)
-async def add_item(item: ItemsCreate, session: AsyncSession = Depends(getSession)):
+async def add_item(item: ItemsBase, session: AsyncSession = Depends(getSession)):
     try:
         result = await crud.add_item(item=item, session=session)
         return {"result": result}

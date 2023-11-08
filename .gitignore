@@ -1,6 +1,6 @@
 storedata.json
 API/venv
-__pycache__/
+__pycache__
 
 *.log
 

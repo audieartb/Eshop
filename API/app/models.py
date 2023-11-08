@@ -1,33 +1,38 @@
 from typing import Optional, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
-import uuid 
+import uuid
 
 ########### Items SQLModel ###########
+
+
 class ItemsBase(SQLModel):
     """For Order Information on Emails"""
     item: str
     description: str
     price: float
+    barcode: str
+    in_stock: int
 
 
 class ItemsDetails(ItemsBase):
     """For details page, reporting and adding items to database"""
-    barcode: str
-    in_stock: int
     sold: int
+
 
 class Items(ItemsDetails, table=True):
     """for database"""
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
 
 
-class OrderItem():
+class OrderItem(SQLModel):
     """Only for order creation"""
     barcode: str
     qty: int
 
 ########### Orders SQLModel ###########
+
+
 class OrderBase(SQLModel):
     """Order Details"""
     email: str
@@ -36,6 +41,7 @@ class OrderBase(SQLModel):
     transaction_id: str
     status: str
     total: float
+    items: List[OrderItem]
 
 
 class Order(OrderBase, table=True):

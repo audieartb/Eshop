@@ -1,5 +1,5 @@
 from ..db import getSession
-from ..models import Items, ItemsCreate, ItemsDetails
+from ..models import Items, ItemsDetails, ItemsBase
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 
@@ -26,7 +26,7 @@ class ItemCrud():
         pass
 
     @staticmethod
-    async def add_item(item: ItemsCreate, session: AsyncSession):
+    async def add_item(item: ItemsBase, session: AsyncSession):
         db_item = Items.from_orm(item)
         session.add(db_item)
         await session.commit()
