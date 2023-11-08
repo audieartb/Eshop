@@ -1,11 +1,12 @@
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
-
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, numeric } from '@vuelidate/validators'
 
+const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
@@ -34,7 +35,7 @@ const rules = {
   country: { required },
   city: { required },
   address: { required },
-  zip: { required},
+  zip: { required },
   delivery: { required }
 }
 
@@ -46,16 +47,27 @@ function clear() {
     state[key] = value
   }
 }
+
+async function submit() {
+  const result = await v$.value.$validate()
+  if (result) {
+    store.email = state.email
+    console.log(state)
+    return router.push({ path: '/payment' })
+  }else{
+    alert("Errors in form")
+  }
+}
 </script>
 
 <template>
   <div>
     <v-container>
-        <v-row class="justify-center">
-            <div class="text-h6 " >Fill in to continue with payment</div>
-        </v-row>
+      <v-row class="justify-center">
+        <div class="text-h6">Fill in to continue with payment</div>
+      </v-row>
       <v-row>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12 v-col-xs-12">
           <v-text-field
             class="row-field"
             variant="outlined"
@@ -67,7 +79,7 @@ function clear() {
             required
           ></v-text-field>
         </v-col>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12">
           <v-text-field
             class="row-field"
             variant="outlined"
@@ -82,7 +94,7 @@ function clear() {
       </v-row>
 
       <v-row>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12">
           <v-text-field
             id="email-field"
             variant="outlined"
@@ -95,36 +107,36 @@ function clear() {
           ></v-text-field>
         </v-col>
       </v-row>
-      
+
       <v-row>
-        <v-col class="v-col-lg-6 v-col-sm-12">
-            <v-text-field
-          class="row-field"
-          variant="outlined"
-          v-model="state.country"
-          @input="v$.country.$touch"
-          @blur="v$.country.$touch"
-          label="Country"
-          :error-messages="v$.country.$errors.map((e) => e.$message)"
-          required
-        ></v-text-field>
+        <v-col class="v-col-md-6 v-col-sm-12">
+          <v-text-field
+            class="row-field"
+            variant="outlined"
+            v-model="state.country"
+            @input="v$.country.$touch"
+            @blur="v$.country.$touch"
+            label="Country"
+            :error-messages="v$.country.$errors.map((e) => e.$message)"
+            required
+          ></v-text-field>
         </v-col>
-       <v-col class="v-col-lg-6 v-col-sm-12">
-        <v-text-field
-          class="row-field"
-          variant="outlined"
-          v-model="state.city"
-          @input="v$.city.$touch"
-          @blur="v$.city.$touch"
-          label="City"
-          :error-messages="v$.city.$errors.map((e) => e.$message)"
-          required
-        ></v-text-field>
-       </v-col>
+        <v-col class="v-col-md-6 v-col-sm-12">
+          <v-text-field
+            class="row-field"
+            variant="outlined"
+            v-model="state.city"
+            @input="v$.city.$touch"
+            @blur="v$.city.$touch"
+            label="City"
+            :error-messages="v$.city.$errors.map((e) => e.$message)"
+            required
+          ></v-text-field>
+        </v-col>
       </v-row>
 
       <v-row>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12">
           <v-text-field
             variant="outlined"
             v-model="state.address"
@@ -138,7 +150,7 @@ function clear() {
       </v-row>
 
       <v-row>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12">
           <v-text-field
             class="row-field"
             variant="outlined"
@@ -150,7 +162,7 @@ function clear() {
             required
           ></v-text-field>
         </v-col>
-        <v-col class="v-col-lg-6 v-col-sm-12">
+        <v-col class="v-col-md-6 v-col-sm-12">
           <v-select
             variant="outlined"
             class="row-field"
@@ -164,7 +176,11 @@ function clear() {
           ></v-select>
         </v-col>
       </v-row>
-      <v-btn class="me-4">Submit</v-btn>
+      <v-row>
+        <v-col class="v-col-md-4 v-col-sm-8 justify-center">
+          <v-btn class="w-100" @click="submit">Submit</v-btn>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -173,5 +189,4 @@ function clear() {
 .row-field {
   margin: 0;
 }
-
 </style>

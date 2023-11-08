@@ -22,10 +22,10 @@ function removeFromCart(item) {
 </script>
 
 <template>
-  <div class="d-flex justify-space-between">
+  <div class="d-flex flex-wrap justify-space-between">
     <template v-if="carts[currentCart]">
-      <div>
-        <div class="d-flex align-start flex-column pt-5">
+      <div class="">
+        <div class="d-flex align-start flex-column pt-5 v-col-sm-12">
           <v-card v-for="(item, idx) in carts[currentCart].items" width="400" class="mb-5 d-flex">
             <v-card-item class="align-content-start me-auto">
               <v-card-title>
@@ -77,7 +77,7 @@ function removeFromCart(item) {
       </div>
     </template>
 
-    <div class="w-50">
+    <div class="w-50 ma-auto">
       <FormPersonal></FormPersonal>
     </div>
   </div>
