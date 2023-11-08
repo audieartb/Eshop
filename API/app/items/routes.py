@@ -1,8 +1,8 @@
 from app.db import getSession
-from app.models import Items, ItemsDetails, ItemsBase
+from app.models import Items, ItemsBase
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
-from .crud import ItemCrud as crud
+import app.items.crud as crud
 
 router = APIRouter()
 
@@ -49,3 +49,11 @@ async def update_item(item: Items, session: AsyncSession = Depends(getSession)):
         return
     except Exception as e:
         raise HTTPException(status_code=500) from e
+    
+@router.post("/itemsbulk", status_code=200)
+async def add_bulk(items: list[Items], session: AsyncSession = Depends(getSession)):
+    try:
+        result = await crud.create_items(items=items, session=session)
+        return
+    except Exception as e:
+        raise HTTPException(status_code=500, details=str(e)) from e

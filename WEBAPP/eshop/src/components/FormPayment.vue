@@ -21,7 +21,7 @@ const newOrder = {
   status: '',
   transaction_id: '',
   created_at: '',
-  cartId: currentCart,//control
+  //cartId: currentCart,//control
   total: 0,
   address: ''
 

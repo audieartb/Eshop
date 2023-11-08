@@ -36,19 +36,18 @@ class OrderItem(SQLModel):
 class OrderBase(SQLModel):
     """Order Details"""
     email: str
-    created_at: datetime
     address: str
     transaction_id: str
     status: str
     total: float
-    items: List[OrderItem]
-
+    
 
 class Order(OrderBase, table=True):
     """Order table for database"""
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
     order_id: str = Field(nullable=False, unique=True)
     order_items: List["ItemsByOrder"] = Relationship(back_populates='order')
+    created_at: datetime = Field(default_factory = datetime.utcnow)
 
 
 class OrderCreate(OrderBase):

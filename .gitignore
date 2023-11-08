@@ -10,3 +10,4 @@ dist
 .vscode
 
 storedata.json
+alembic.ini
