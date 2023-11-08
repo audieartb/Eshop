@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import CartView from '../views/CartView.vue'
 import PaymentView from '../views/PaymentView.vue'
-
+import OrderCompletedView from '../views/OrderCompletedView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,6 +28,11 @@ const router = createRouter({
       path:'/payment',
       name: 'payment',
       component: () => import('../views/PaymentView.vue')
+    },
+    {
+      path: '/complete',
+      name: 'complete',
+      component: () => import('../views/OrderCompletedView.vue')
     }
   ]
 })

@@ -3,27 +3,28 @@ import { ref, reactive } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/orders'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, numeric, minLength, maxLength } from '@vuelidate/validators'
+import router from '../router'
 
 const store = useCartStore()
-const { justItems } = storeToRefs(store)
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 
-var total = carts
-console.log(total)
 
 const newOrder = {
-  orderId: '',
+  //orderId: '231108-XDBRIEKM',
   email: store.email,
   items: [],
   status: '',
-  paymentId: '',
-  date: '',
-  cartId: currentCart,
+  transaction_id: '',
+  created_at: '',
+  cartId: currentCart,//control
   total: 0,
+  address: ''
+
 }
 
 const initialState = {
@@ -38,22 +39,26 @@ const formState = reactive({
 
 const rules = {
   name: { required },
-  number: { required, numeric, minLength: 16, maxLength: 16 },
+  number: { required, numeric, minLength: 1, maxLength: 16 },
   cvv: { required, numeric },
   exp: { required }
 }
+
+const v$ = useVuelidate(rules, formState)
+
 function clear() {
   v$.value.$reset()
   for (const [key, value] of Object.entries(initialState)) {
-    state[key] = value
+    formState[key] = value
   }
 }
 
 function processItems() {
-  const orderItems = []
-  justItems.forEach((item) => {
-    orderItems.push({ barcode: item.barcode }, { qty: item.qty })
-  })
+  let orderItems = []
+  let justItems = store.justItems
+  for(const item in justItems){
+    newOrder.items.push({ barcode: justItems[item].barcode }, { qty: justItems[item].qty })
+  } 
 }
 
 async function checkAvailability(){
@@ -61,13 +66,17 @@ async function checkAvailability(){
 }
 
 
-function processPayment(card) {
+function processPayment() {
 
-    newOrder.status = 'pending',
-    newOrder.paymentId = '1234',
+    alert(`payment successful`)
+    newOrder.total = store.carts[store.currentCart].total
+    newOrder.status = 'pending'
+    newOrder.paymentId = '1234'
     newOrder.date = String(Date.now())
-    alert('payment successful')
-    clear()
+    processItems()
+    store.deleteCart(currentCart)
+    return router.push({path: '/complete'})
+
 }   
 
 </script>
@@ -79,7 +88,7 @@ function processPayment(card) {
       <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
       <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
       <v-text-field label="Expiration Date" :error-messages="'error'" required></v-text-field>
-      <v-btn class="me-4">Complete Order</v-btn>
+      <v-btn class="me-4" @click="processPayment()" >Complete Order</v-btn>
     </form>
   </div>
 </template>

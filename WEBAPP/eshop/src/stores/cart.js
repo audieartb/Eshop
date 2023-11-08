@@ -14,7 +14,8 @@ export const useCartStore = defineStore('cart', {
       return !state.currentCart ? null : state.carts[state.currentCart]
     },
     justItems(state){
-      return !state.currentCart ? null : state.carts[state.currentCart].items
+      let items  = !state.currentCart ? null : state.carts[state.currentCart].items
+      return items
     }
   },
   actions: {
@@ -71,6 +72,11 @@ export const useCartStore = defineStore('cart', {
     inCart(barcode) {
       console.log('checking in cart')
       return !this.carts[this.currentCart].items[barcode] ? false : true
+    },
+    deleteCart(cartId){
+      delete this.carts[this.currentCart]
+      this.currentCart = null
     }
+    
   }
 })
