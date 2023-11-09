@@ -20,7 +20,7 @@ async def get_items(skip: int = 0, limit: int = 15, session: AsyncSession = Depe
 async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
     """item by id receives the barcode"""
     try:
-        item = await crud.item_by_id(item_id, session=session)
+        item = await crud.item_by_id(barcode=item_id, session=session)
         if (item is None):
             raise HTTPException(status_code=404, detail="Item not found")
         return {"item": item}
@@ -34,7 +34,8 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
 
 
 @router.post("/items", status_code=201)
-async def add_item(item: ItemsBase, session: AsyncSession = Depends(getSession)):
+async def add_item(item: Items, session: AsyncSession = Depends(getSession)):
+    """adds one item"""
     try:
         result = await crud.add_item(item=item, session=session)
         return {"result": result}
@@ -44,6 +45,7 @@ async def add_item(item: ItemsBase, session: AsyncSession = Depends(getSession))
 
 @router.put("/items", status_code=204)
 async def update_item(item: Items, session: AsyncSession = Depends(getSession)):
+    """updates one item"""
     try:
         await crud.update_item_sold(item_id=item.id, sold=item.sold, session=session)
         return

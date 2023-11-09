@@ -23,7 +23,7 @@ async def search_items(keyword: str, session: AsyncSession):
     pass
 
 
-async def add_item(item: ItemsBase, session: AsyncSession):
+async def add_item(item: Items, session: AsyncSession):
     db_item = Items.from_orm(item)
     session.add(db_item)
     await session.commit()
