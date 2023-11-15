@@ -3,6 +3,9 @@ import HomeView from '../views/HomeView.vue'
 import CartView from '../views/CartView.vue'
 import PaymentView from '../views/PaymentView.vue'
 import OrderCompletedView from '../views/OrderCompletedView.vue'
+import OrderRequestView from '../views/OrderRequestView.vue'
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -33,6 +36,11 @@ const router = createRouter({
       path: '/complete',
       name: 'complete',
       component: () => import('../views/OrderCompletedView.vue')
+    },
+    {
+      path: '/order/request',
+      name: 'order_request',
+      component: () => import('../views/OrderRequestView.vue')
     }
   ]
 })

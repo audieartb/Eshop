@@ -21,7 +21,8 @@ const { currentCart } = storeToRefs(store)
       <template v-slot:append>
         <v-btn icon="mdi-magnify"></v-btn>
 
-        <!-- <v-btn icon="mdi-cart"></v-btn> -->
+        <v-btn icon="mdi-heart">
+        </v-btn>
         <v-btn v-if="carts[currentCart]" stacked>
           <router-link to="/cart">
             <v-badge :content="carts[currentCart].total_items" color="error">
