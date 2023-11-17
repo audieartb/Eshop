@@ -1,11 +1,23 @@
 from ..db import getSession
 from ..models import Items, ItemsDetails, ItemsBase
 from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select
+from sqlmodel import select, or_
 
 
-async def get_items(limit: int, skip: int, session: AsyncSession):
+async def get_items(limit: int, skip: int, price_from: int | None,
+                    price_to: int | None, search: str, session: AsyncSession):
+    """Handles all queries to multiple items"""
     statement = select(Items).offset(skip).limit(limit)
+    if search:
+        print('adds filter to ' + search)
+        statement = statement.filter(or_(
+            Items.item.regexp_match(search, 'i'), Items.description.regexp_match(search, 'i')))
+
+    if price_from:
+        statement = statement.where(Items.price > price_from)
+    if price_to:
+        statement = statement.where(Items.price < price_to)
+
     result = await session.execute(statement)
     items = result.scalars().all()
     return items
@@ -44,6 +56,7 @@ async def update_item_sold(item_id: int, sold: int, session: AsyncSession):
     session.commit()
     session.refresh(item)
     return item
+
 
 async def create_items(items: list[Items], session: AsyncSession):
     for item in items:

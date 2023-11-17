@@ -20,7 +20,6 @@ const { currentCart } = storeToRefs(store)
       
       <template v-slot:append>
         <v-btn icon="mdi-magnify"></v-btn>
-
         <v-btn icon="mdi-heart">
         </v-btn>
         <v-btn v-if="carts[currentCart]" stacked>

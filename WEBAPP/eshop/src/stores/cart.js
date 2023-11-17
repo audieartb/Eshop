@@ -6,7 +6,8 @@ export const useCartStore = defineStore('cart', {
     return {
       email: '',
       currentCart: null,
-      carts: {}
+      carts: {},
+      favorites:[]
     }
   },
   getters: {
@@ -16,6 +17,9 @@ export const useCartStore = defineStore('cart', {
     justItems(state){
       let items  = !state.currentCart ? null : state.carts[state.currentCart].items
       return items
+    },
+    getFavorites(state){
+      return state.favorites
     }
   },
   actions: {
@@ -67,10 +71,8 @@ export const useCartStore = defineStore('cart', {
       }
       this.carts[this.currentCart].total -= item.price
       this.carts[this.currentCart].total_items--
-      console.log('finish remove')
     },
     inCart(barcode) {
-      console.log('checking in cart')
       return !this.carts[this.currentCart].items[barcode] ? false : true
     },
     deleteCart(cartId){

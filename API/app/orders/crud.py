@@ -25,7 +25,6 @@ async def create_order(order: OrderCreate, session: AsyncSession) -> str:
     print(order.items)
     for item in order.items:
         temp = ItemsByOrder(order_id=db_order.id, item_id=item.barcode)
-        print(temp)
         session.add(temp)
     await session.commit()
     return order_id

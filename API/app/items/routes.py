@@ -8,9 +8,11 @@ router = APIRouter()
 
 
 @router.get("/items", response_model=list[Items])
-async def get_items(skip: int = 0, limit: int = 15, session: AsyncSession = Depends(getSession)):
+async def get_items(skip: int = 0, limit: int = 15, price_from: int | None = None,
+                    price_to: int | None = None, search: str = '', session: AsyncSession = Depends(getSession)):
+    """Handles all requests to search multiple items"""
     try:
-        result = await crud.get_items(limit=limit, skip=skip,  session=session)
+        result = await crud.get_items(limit=limit, skip=skip, price_from=price_from, price_to=price_to, search=search,   session=session)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -26,11 +28,6 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
         return {"item": item}
     except Exception as e:
         raise HTTPException(status_code=500) from e
-
-
-# @router.get("/items/search")
-# async def search_items(session: AsyncSession = Depends(getSession)):
-#     pass
 
 
 @router.post("/items", status_code=201)
@@ -51,7 +48,8 @@ async def update_item(item: Items, session: AsyncSession = Depends(getSession)):
         return
     except Exception as e:
         raise HTTPException(status_code=500) from e
-    
+
+
 @router.post("/itemsbulk", status_code=200)
 async def add_bulk(items: list[Items], session: AsyncSession = Depends(getSession)):
     try:
