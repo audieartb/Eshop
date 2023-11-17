@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
@@ -8,13 +8,14 @@ import ItemCard from './ItemCard.vue'
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
+const {getFavorites} = storeToRefs(store)
 
 const baseURL = 'http://localhost:8000/api/items'
 const URL = 'http://localhost:8000/api/items?skip=0&limit=5&priceFrom=50&priceTo=600&search=you'
 const page = ref(1)
 const search = ref('')
 const favorites = ref([])
-const filterFavorites = ref(false)
+const showFavorites = ref(false)
 const itemsPerPage = ref(3)
 const pageCount = ref(10)
 const priceFrom = ref(null)
@@ -119,6 +120,22 @@ function filterUpdate(event) {
   }
 }
 
+function filterFavorites(){
+  if(showFavorites){
+     }else{
+    table_items.value = d
+  }
+
+    
+}
+
+watch(showFavorites, async(newShowFavorites, oldShowFavorites)=>{
+  if(newShowFavorites){
+    table_items.value = table_items.value.filter(i =>getFavorites.value.includes(i.barcode))
+  }else if( !newShowFavorites && oldShowFavorites){
+    table_items.value = items.value
+  }
+})
 
 async function getItems() {
   table_items.value = items.value
@@ -191,7 +208,8 @@ onMounted(() => {
           class="ma-2 w-10"
           density="compact"
           label="Favorites"
-          v-model="filterFavorites"
+          v-model="showFavorites"
+          @update:modelValue="filterFavorites"
         ></v-checkbox>
       </v-col>
     </v-row>
