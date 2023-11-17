@@ -1,11 +1,11 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useOrderStore = defineStore('order',  {
+export const useProductStore = defineStore('products',  {
 
   state:()=>{
     return{
-      orders:{}
+      products:[]
     }
   }
 })

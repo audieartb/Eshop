@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted} from 'vue'
+import { ref, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import ItemCard from './ItemCard.vue'
@@ -9,19 +10,16 @@ const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 
 const baseURL = 'http://localhost:8000/api/items'
-const URL = 'http://localhost:8000/api/items?skip=0&limit=5&price_from=50&price_to=600&search=you'
+const URL = 'http://localhost:8000/api/items?skip=0&limit=5&priceFrom=50&priceTo=600&search=you'
 const page = ref(1)
-const skip = ref(0)
-const limit = ref(0)
 const search = ref('')
 const favorites = ref([])
 const filterFavorites = ref(false)
 const itemsPerPage = ref(3)
 const pageCount = ref(10)
-const price_from = ref(0)
-const price_to = ref(null)
-
-
+const priceFrom = ref(null)
+const priceTo = ref(null)
+const table_items = ref(null)
 const items = ref([
   {
     barcode: '100000000011',
@@ -89,22 +87,42 @@ const items = ref([
   }
 ])
 
-const table_items = ref([])
-
-const priceFilter = ()=>{
-  console.log('filtering')
-  table_items.value = items.value.filter((i)=>{
-    if( price_to.value){
-      return i.price > price_from.value && i.price < price_to.value
-    }else{
-      console.log(i.price)
-      return i.price > price_from.value
-    }
-  })
-  console.log(table_items.value)
+function searchItems() {
+  if (search.value) {
+    let lowerCaseValue = search.value.split(' ').map((i) => i.trim().toLowerCase())
+    table_items.value = items.value.filter((item) =>
+      lowerCaseValue.some(
+        (word) =>
+          item.item.toLowerCase().includes(word) || item.description.toLowerCase().includes(word)
+      )
+    )
+  }
 }
 
+function emptySearch(){
+    search.value = ''
+    table_items.value = items.value
+}
+function filterUpdate(event) {
+  if (!event) {
+    table_items.value = items.value.filter((i) => {
+      if (priceTo.value && priceFrom.value) {
+        return i.price > priceFrom.value && i.price < priceTo.value
+      } else if (priceFrom.value) {
+        return i.price > priceFrom.value
+      } else if (priceTo.value) {
+        return i.price < priceTo.value
+      }
+      return i
+    })
+    console.log(table_items.value)
+  }
+}
+
+
 async function getItems() {
+  table_items.value = items.value
+  return
   axios
     .get(baseURL)
     .then((res) => {
@@ -121,36 +139,77 @@ async function getItems() {
 }
 
 onMounted(() => {
-
-  //getItems()
+  getItems()
 })
 </script>
 
 <template>
-  <div>
+  <div class="mb-10">
     <v-row class="justify-center">
-      <v-col cols="2" class="">
-        <div class="text-h6">Price range</div>
+      <v-col cols="6" class="d-flex">
+        <v-text-field
+          class="mr-3"
+          density="compact"
+          variant="outlined"
+          label="Search"
+          v-model="search"
+          append-inner-icon="mdi-close-circle-outline"
+          @click:appendInner="emptySearch()"
+        ></v-text-field>
+        <v-btn icon="mdi-magnify" color="orange" 
+          @click="searchItems()"
+        class="align-self-start mt-n1"></v-btn>
       </v-col>
-      <v-col cols="2">
-        <v-text-field density="compact" variant="outlined" label="From:"></v-text-field>
-      </v-col>
-      <v-col cols="2">
-        <v-text-field density="compact" variant="outlined" label="To:"></v-text-field>
-      </v-col>
-      <v-col cols="2">
-        <v-checkbox density="compact" label="Favorites" v-model="filterFavorites"></v-checkbox>
-      </v-col>
-      <v-col cols="3">
-        <v-btn density="compact" label="Search"> Filter</v-btn>
+    </v-row>
+
+    <v-row class="justify-center mt-0">
+      <v-col class="d-flex rounded-lg filter-container pa-0" cols="8">
+        <div class="w-25 d-flex align-center">
+          <div class="text-h6 mt-n3">$</div>
+          <v-text-field
+            type="number"
+            hide-spin-buttons
+            class="ma-2"
+            density="compact"
+            variant="outlined"
+            label="Price from:"
+            v-model="priceFrom"
+          ></v-text-field>
+        </div>
+        <v-text-field
+          class="ma-2"
+          density="compact"
+          variant="outlined"
+          label="Price to:"
+          type="number"
+          hide-spin-buttons
+          v-model="priceTo"
+          @update:focused="filterUpdate($event)"
+        ></v-text-field>
+
+        <v-checkbox
+          class="ma-2 w-10"
+          density="compact"
+          label="Favorites"
+          v-model="filterFavorites"
+        ></v-checkbox>
       </v-col>
     </v-row>
   </div>
-  <div class="d-flex flex-wrap justify-space-between">  
-       <ItemCard v-for="(item, idx) in items" :key="idx" v-bind:item="item"></ItemCard>
-      
+  <template v-if="table_items">
+    <div v-if="table_items.length > 0" class="d-flex flex-wrap justify-space-between">
+    <ItemCard v-for="(item, idx) in table_items" :key="idx" v-bind:item="item"></ItemCard>
     <v-pagination :length="4" v-model="page"></v-pagination>
   </div>
+  <div v-else>
+    <div>There's no products matching your search</div>
+  </div>
+  </template>
+  <template v-else>
+    <div>
+      There's nothing here
+    </div>
+  </template>
 </template>
 
 <style scoped>

@@ -15,7 +15,7 @@ const { currentCart } = storeToRefs(store)
     
         <router-link to="/">
           <div class="text-h3 ml-5">
-            Welcome
+            What are you buying?
           </div></router-link>
       
       <template v-slot:append>

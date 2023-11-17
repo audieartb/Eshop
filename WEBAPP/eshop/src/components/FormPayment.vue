@@ -1,10 +1,8 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useCartStore } from '@/stores/cart'
-import { useOrderStore } from '@/stores/orders'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, numeric, minLength, maxLength } from '@vuelidate/validators'
 import router from '../router'
