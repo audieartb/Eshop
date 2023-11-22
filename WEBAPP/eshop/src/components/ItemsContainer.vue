@@ -1,27 +1,32 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import ItemCard from './ItemCard.vue'
 const store = useCartStore()
-const { carts } = storeToRefs(store)
-const { currentCart } = storeToRefs(store)
-const {getFavorites} = storeToRefs(store)
-
+const productsStore = useProductStore()
+const { getFavorites } = storeToRefs(store)
 const baseURL = 'http://localhost:8000/api/items'
 const URL = 'http://localhost:8000/api/items?skip=0&limit=5&priceFrom=50&priceTo=600&search=you'
-const page = ref(1)
 const search = ref('')
-const favorites = ref([])
 const showFavorites = ref(false)
-const itemsPerPage = ref(3)
-const pageCount = ref(10)
+const pagination = ref({
+  pageCount: 7,
+  itemsPerPage: 7,
+  start: 0,
+  end: 0,
+  pageIdx: 1
+})
+const isFiltered = ref(false)
+const currentPage = ref()
 const priceFrom = ref(null)
 const priceTo = ref(null)
-const table_items = ref(null)
-const items = ref([
+const tableItems = ref(null)
+const pageItems = ref([])
+const items = ref([])
+const itemsold = ref([
   {
     barcode: '100000000011',
     item: 'Coffee Maker',
@@ -88,57 +93,107 @@ const items = ref([
   }
 ])
 
-function searchItems() {
+// Pagination Control
+function initPage() {
+  items.value = productsStore.products
+  if (items.value) {
+    tableItems.value = items.value
+    if (items.value.length < pagination.value.itemsPerPage) {
+      pageItems.value = items.value
+    } else {
+      pageItems.value = tableItems.value.slice(0, pagination.value.itemsPerPage)
+      console.log(pageItems.value.length)
+      pagination.value.end = pageItems.value.length - 1
+    }
+  }
+}
+function refreshPagination() {
+  if (tableItems.value.length < pagination.value.itemsPerPage) {
+    pageItems.value = tableItems.value
+  } else {
+    pageItems.value = tableItems.value.slice(0, pagination.value.itemsPerPage)
+    console.log(pageItems.value.length)
+    pagination.value.end = pageItems.value.length - 1
+  }
+}
+
+watch(currentPage, (newCurrentPage, oldCurrentPage) => {
+  let start = (newCurrentPage - 1) * pagination.value.itemsPerPage
+  let end = newCurrentPage * pagination.value.itemsPerPage
+  console.log(start, end)
+  pageItems.value = tableItems.value.slice(start, end)
+})
+
+const pages = computed(() => {
+  return Math.ceil(tableItems.value.length / pagination.value.itemsPerPage)
+})
+
+//Search and price filters
+function searchItems(refresh) {
   if (search.value) {
     let lowerCaseValue = search.value.split(' ').map((i) => i.trim().toLowerCase())
-    table_items.value = items.value.filter((item) =>
+    tableItems.value = items.value.filter((item) =>
       lowerCaseValue.some(
         (word) =>
           item.item.toLowerCase().includes(word) || item.description.toLowerCase().includes(word)
       )
     )
   }
-}
-
-function emptySearch(){
-    search.value = ''
-    table_items.value = items.value
-}
-function filterUpdate(event) {
-  if (!event) {
-    table_items.value = items.value.filter((i) => {
-      if (priceTo.value && priceFrom.value) {
-        return i.price > priceFrom.value && i.price < priceTo.value
-      } else if (priceFrom.value) {
-        return i.price > priceFrom.value
-      } else if (priceTo.value) {
-        return i.price < priceTo.value
-      }
-      return i
-    })
-    console.log(table_items.value)
+  if (refresh) {
+    refreshPagination()
   }
 }
 
-function filterFavorites(){
-  if(showFavorites){
-     }else{
-    table_items.value = d
-  }
-
-    
+function emptySearch() {
+  search.value = ''
+  tableItems.value = items.value
+  priceFrom.value = null
+  priceTo.value = null
+  refreshPagination()
 }
 
-watch(showFavorites, async(newShowFavorites, oldShowFavorites)=>{
-  if(newShowFavorites){
-    table_items.value = table_items.value.filter(i =>getFavorites.value.includes(i.barcode))
-  }else if( !newShowFavorites && oldShowFavorites){
-    table_items.value = items.value
+async function filterControl(event) {
+  /// Decides to do combined filte with search or just filters///
+  if (!event && search.value) {
+    await searchItems(false)
+    tableItems.value = await applyFilter(tableItems.value)
+  } else if (!event && !search.value) {
+    console.log('no search')
+    tableItems.value = await applyFilter(items.value)
   }
+  if (!priceTo && !priceFrom) {
+    isFiltered.value = false
+  } else {
+    isFiltered.value = true
+  }
+
+  refreshPagination()
+}
+
+function applyFilter(data) {
+  ///Filters data based on price///
+  if (priceFrom.value && !priceTo.value) {
+    return data.filter((i) => i.price > priceFrom.value)
+  } else if (priceTo.value) {
+    return data.filter((i) => i.price > priceFrom.value && i.price < priceTo.value)
+  } else {
+    return data
+  }
+}
+
+watch(showFavorites, async (newShowFavorites, oldShowFavorites) => {
+  ///Retrieves Items marked as Favorites from LocalStorage///
+  if (newShowFavorites) {
+    tableItems.value = items.value.filter((i) => getFavorites.value.includes(i.barcode))
+  } else if (!newShowFavorites && oldShowFavorites) {
+    tableItems.value = items.value
+  }
+  refreshPagination()
 })
 
+//Requesting data from API and LocalStorage
 async function getItems() {
-  table_items.value = items.value
+  tableItems.value = items.value
   return
   axios
     .get(baseURL)
@@ -156,7 +211,7 @@ async function getItems() {
 }
 
 onMounted(() => {
-  getItems()
+  initPage()
 })
 </script>
 
@@ -173,9 +228,12 @@ onMounted(() => {
           append-inner-icon="mdi-close-circle-outline"
           @click:appendInner="emptySearch()"
         ></v-text-field>
-        <v-btn icon="mdi-magnify" color="orange" 
-          @click="searchItems()"
-        class="align-self-start mt-n1"></v-btn>
+        <v-btn
+          icon="mdi-magnify"
+          color="orange"
+          @click="searchItems(true)"
+          class="align-self-start mt-n1"
+        ></v-btn>
       </v-col>
     </v-row>
 
@@ -201,7 +259,7 @@ onMounted(() => {
           type="number"
           hide-spin-buttons
           v-model="priceTo"
-          @update:focused="filterUpdate($event)"
+          @update:focused="filterControl($event)"
         ></v-text-field>
 
         <v-checkbox
@@ -209,24 +267,31 @@ onMounted(() => {
           density="compact"
           label="Favorites"
           v-model="showFavorites"
-          @update:modelValue="filterFavorites"
         ></v-checkbox>
       </v-col>
     </v-row>
   </div>
-  <template v-if="table_items">
-    <div v-if="table_items.length > 0" class="d-flex flex-wrap justify-space-between">
-    <ItemCard v-for="(item, idx) in table_items" :key="idx" v-bind:item="item"></ItemCard>
-    <v-pagination :length="4" v-model="page"></v-pagination>
-  </div>
-  <div v-else>
-    <div>There's no products matching your search</div>
-  </div>
+  <template v-if="pageItems">
+    <div v-if="pageItems.length > 0">
+      <div class="d-flex flex-wrap">
+        <ItemCard v-for="(item, idx) in pageItems" :key="idx" v-bind:item="item"></ItemCard>
+      </div>
+      <div class="d-flex justify-center">
+        <v-pagination
+          :length="pages"
+          v-model="currentPage"
+          total-visible="5"
+          :start="1"
+        ></v-pagination>
+      </div>
+    </div>
+
+    <div v-else-if="pageItems.length == 0">
+      <div>There's no products matching your search</div>
+    </div>
   </template>
   <template v-else>
-    <div>
-      There's nothing here
-    </div>
+    <div>There's nothing here</div>
   </template>
 </template>
 

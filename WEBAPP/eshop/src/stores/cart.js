@@ -7,37 +7,47 @@ export const useCartStore = defineStore('cart', {
       email: '',
       currentCart: null,
       carts: {},
-      favorites:[]
+      favorites: []
     }
   },
   getters: {
     itemsInCart(state) {
       return !state.currentCart ? null : state.carts[state.currentCart]
     },
-    justItems(state){
-      let items  = !state.currentCart ? null : state.carts[state.currentCart].items
+    justItems(state) {
+      let items = !state.currentCart ? null : state.carts[state.currentCart].items
       return items
     },
-    getFavorites(state){
+    getFavorites(state) {
       return state.favorites
+    },
+    getCarts(state){
+      return Object.keys(this.carts)
     }
   },
   actions: {
     createCart() {
-      if (this.carts.length >= 3) {
-        return
+      if (this.getCarts.length >= 3) {
+        return false
       } else {
         let cart = {
           items: {},
           total: 0,
-          total_items:0
+          total_items: 0
         }
-        this.setCurrentCart()
+        this.setCurrentCart(null)
         this.carts[this.currentCart] = cart
+        this.carts[this.currentCart].id = this.currentCart
       }
+      return true
     },
-    setCurrentCart() {
-      this.currentCart = String(Date.now())
+    setCurrentCart(cartId) {
+      if(!cartId){
+        this.currentCart = String(Date.now())
+      }else{
+        this.currentCart = cartId
+      }
+      
     },
     async addToCart(item) {
       if (!this.currentCart) {
@@ -49,8 +59,8 @@ export const useCartStore = defineStore('cart', {
           barcode: item.barcode,
           qty: 1,
           price: item.price,
-          img: "https://cdn.vuetifyjs.com/images/cards/docks.jpg",
-          title: item.item,
+          img: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg',
+          title: item.item
         }
         this.carts[this.currentCart].items[item.barcode] = newItem
       } else {
@@ -58,7 +68,6 @@ export const useCartStore = defineStore('cart', {
       }
       this.carts[this.currentCart].total += item.price
       this.carts[this.currentCart].total_items++
-      
     },
     removeOneFromCart(item) {
       let barcode = item.barcode
@@ -71,14 +80,21 @@ export const useCartStore = defineStore('cart', {
       }
       this.carts[this.currentCart].total -= item.price
       this.carts[this.currentCart].total_items--
+      if (this.carts[this.currentCart].total_items <= 0) {
+        this.deleteCart(this.currentCart)
+      }
     },
     inCart(barcode) {
       return !this.carts[this.currentCart].items[barcode] ? false : true
     },
-    deleteCart(cartId){
-      delete this.carts[this.currentCart]
-      this.currentCart = null
+    deleteCart(cartId) {
+      delete this.carts[cartId]
+      if(this.getCarts.length>0){
+        this.currentCart = this.carts[this.getCarts[0]]
+      }else{
+        this.currentCart = null
+      }
+      return true
     }
-    
   }
 })
