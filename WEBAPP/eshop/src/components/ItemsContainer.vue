@@ -14,7 +14,7 @@ const search = ref('')
 const showFavorites = ref(false)
 const pagination = ref({
   pageCount: 7,
-  itemsPerPage: 7,
+  itemsPerPage: 9,
   start: 0,
   end: 0,
   pageIdx: 1
@@ -273,7 +273,7 @@ onMounted(() => {
   </div>
   <template v-if="pageItems">
     <div v-if="pageItems.length > 0">
-      <div class="d-flex flex-wrap">
+      <div class="d-flex flex-wrap justify-start">
         <ItemCard v-for="(item, idx) in pageItems" :key="idx" v-bind:item="item"></ItemCard>
       </div>
       <div class="d-flex justify-center">

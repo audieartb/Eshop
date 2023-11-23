@@ -53,7 +53,7 @@ function addToFavorites(barcode) {
 </script>
 
 <template>
-    <v-card class="mx-auto mb-5" max-width="400">
+    <v-card class="mx-auto mb-5 product-card" max-width="400">
       <v-img
         class="align-end text-white"
         height="200"
@@ -96,3 +96,12 @@ function addToFavorites(barcode) {
 
     
 </template>
+
+<style scoped>
+
+.product-card{
+    padding: 1em;
+    flex-basis: 30%;
+    margin: 2rem;
+}
+</style>

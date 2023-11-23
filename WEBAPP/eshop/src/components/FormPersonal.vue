@@ -5,7 +5,7 @@ import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, numeric } from '@vuelidate/validators'
-
+const emit = defineEmits(['click-next', 'click-prev'])
 const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
@@ -50,19 +50,20 @@ function clear() {
 
 async function submit() {
   const result = await v$.value.$validate()
-  if (result) {
-    store.email = state.email
-    console.log(state)
-    return router.push({ path: '/payment' })
-  }else{
-    alert("Errors in form")
-  }
+  emit('click-next')
+  // if (result) {
+  //   store.email = state.email
+  //   console.log(state)
+  //   emit('click-next')
+  // }else{
+  //   alert("Errors in form")
+  // }
 }
 </script>
 
 <template>
-  <div>
-    <v-container>
+  <div class="stepper-item d-flex flex-column">
+    <v-container class="column-item">
       <v-row class="justify-center">
         <div class="text-h6">Fill in to continue with payment</div>
       </v-row>
@@ -104,6 +105,7 @@ async function submit() {
             label="Email"
             :error-messages="v$.email.$errors.map((e) => e.$message)"
             required
+            autocomplete="on"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -176,17 +178,28 @@ async function submit() {
           ></v-select>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col class="v-col-md-4 v-col-sm-8 justify-center">
-          <v-btn class="w-100" @click="submit">Submit</v-btn>
-        </v-col>
-      </v-row>
     </v-container>
+    <v-row class="d-flex justify-space-between column-item align-end mb-2">
+      <v-col class="v-col-md-4 v-col-sm-8 justify-center">
+        <v-btn class="w-50" @click="$emit('click-prev')">Go Back <v-icon icon="mdi-restart"></v-icon></v-btn>
+      </v-col>
+      <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-center">
+        <v-btn class="w-50" @click="clear">Clear Form <v-icon icon="mdi-delete-sweep-outline"></v-icon></v-btn>
+      </v-col>
+      <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
+        <v-btn class="w-50" @click="submit">Submit</v-btn>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <style scoped>
 .row-field {
   margin: 0;
+}
+
+.column-item{
+  flex: 1;
+
 }
 </style>

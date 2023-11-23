@@ -13,6 +13,9 @@
   padding-top: 5rem;
 }
 
+.stepper-item{
+  min-height: 620px;
+}
 
 /*
 a,

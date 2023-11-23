@@ -72,6 +72,7 @@ function showSnackbar(customText, color) {
           :color="currentCart == key ? 'orange-lighten-2' : ''"
           v-for="[key, value] of Object.entries(carts)"
           :key="key"
+          scrollable
         >
           <v-card-text>{{cartText(value.total_items)}}</v-card-text>
           <v-sheet class="mx-2 rounded d-flex" >
@@ -87,22 +88,22 @@ function showSnackbar(customText, color) {
                   </v-img>
                   <div class="text-body-1">{{ item.title }}  </div>
                   <div class="text-caption">{{ item.qty }}</div>
-
                 </div>
               </v-slide-group-item>
             </v-slide-group>
             <v-btn class="align-self-center" @click="isActive.value = false"><router-link to="/cart">Edit</router-link></v-btn>
           </v-sheet>
-
           <div class="d-flex justify-center my-2">
-            <v-btn class="mx-2" @click="switchCart(key)">Select</v-btn>
-            <v-btn class="mx-2" @click="deleteCart(key)" color="red-darken-1">Delete</v-btn>
+            <v-btn class="mx-2" @click="switchCart(key)" density="comfortable">Select</v-btn>
+            <v-btn class="mx-2" @click="deleteCart(key)" density="comfortable" color="red-darken-1">Delete</v-btn>
           </div>
         </v-card>
       </v-card>
-      <div class="my-2 d-flex flex-column">
-        <v-btn class="mb-1" @click="createNewCart">Create New Cart</v-btn>
-        <v-btn @click="isActive.value = false">Done</v-btn>
+      <div class="my-2 d-flex justify-center">
+       <div class="">
+        <v-btn class="mb-1 w-100" @click="createNewCart">Create New Cart</v-btn>
+        <v-btn class="w-100"  @click="isActive.value = false">Done</v-btn>
+       </div>
       </div>
     </template>
   </v-dialog>

@@ -80,13 +80,31 @@ function processPayment() {
 </script>
 
 <template>
-  <div>
-    <form action="">
+  <div class="stepper-item d-flex flex-column ">
+   <v-sheet class="column-item d-flex justify-center align-center" >
+    <div class="w-50">
+      <form action="">
       <v-text-field label="Name on Card" :error-messages="'error'" required></v-text-field>
       <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
       <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
       <v-text-field label="Expiration Date" :error-messages="'error'" required></v-text-field>
-      <v-btn class="me-4" @click="processPayment()" >Complete Order</v-btn>
     </form>
+    </div>
+   </v-sheet>
+    <v-row class="d-flex justify-space-between column-item align-end mb-2">
+      <v-col class="v-col-md-4 v-col-sm-8 justify-center">
+          <v-btn class="w-50" @click="$emit('click-prev')">Go Back</v-btn>
+        </v-col>
+        <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
+          <v-btn class="me-4 w-50" @click="processPayment()" >Complete Order</v-btn>
+        </v-col>
+    </v-row>
   </div>
 </template>
+
+<style scoped>
+.column-item{
+  flex: 1;
+
+}
+</style>
