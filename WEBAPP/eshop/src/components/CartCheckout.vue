@@ -1,18 +1,21 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
+
 
 const emit = defineEmits(['click-next', 'click-prev'])
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 const { justItems } = storeToRefs(store)
+const cartRef = ref()
 
 async function addToCart(item) {
   await store.addToCart(item)
   console.log(store.carts[store.currentCart].items)
 }
+
 
 function removeFromCart(item) {
   store.removeOneFromCart(item)
@@ -20,8 +23,9 @@ function removeFromCart(item) {
 </script>
 
 <template>
-  <div v-if="carts[currentCart]" class="stepper-item">
+  <div v-if="carts[currentCart]" class="stepper-item" ref="cartRef">
     <div class="d-flex flex-column">
+      {{ cartPath }}
       <div class="d-flex align-start flex-column pt-5 v-col-sm-12 column-item">
         <v-card v-for="(item, idx) in carts[currentCart].items" width="400" class="mb-5 d-flex">
           <v-card-item class="align-content-start me-auto">
@@ -78,7 +82,7 @@ function removeFromCart(item) {
   <div class=" column-item mb-2 align-end">
     <v-row class="justify-end ma-1 d-flex column-item mb-2">
       <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
-        <v-btn class="w-50" @click="$emit('click-next')">Next</v-btn>
+        <v-btn class="w-50" @click="$emit('click-next')">Start Checkout</v-btn>
       </v-col>
     </v-row>
   </div>

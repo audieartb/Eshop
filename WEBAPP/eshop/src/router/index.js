@@ -4,7 +4,7 @@ import CartView from '../views/CartView.vue'
 import PaymentView from '../views/PaymentView.vue'
 import OrderCompletedView from '../views/OrderCompletedView.vue'
 import OrderRequestView from '../views/OrderRequestView.vue'
-
+import OrderConfirmation from '../views/OrderConfirmation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,22 +25,29 @@ const router = createRouter({
     {
       path:'/cart',
       name: 'cart',
-      component: () => import('../views/CartView.vue')
+      component: () => import('../views/CartView.vue'),
+    
     },
     {
       path:'/payment',
       name: 'payment',
-      component: () => import('../views/PaymentView.vue')
+      component: PaymentView
     },
     {
       path: '/complete',
       name: 'complete',
-      component: () => import('../views/OrderCompletedView.vue')
+      component: OrderCompletedView
     },
     {
       path: '/order/request',
       name: 'order_request',
-      component: () => import('../views/OrderRequestView.vue')
+      component: OrderRequestView
+    },
+    {
+      path: '/verification/:token',
+      name: 'verification',
+      component: OrderConfirmation,
+      props: true
     }
   ]
 })

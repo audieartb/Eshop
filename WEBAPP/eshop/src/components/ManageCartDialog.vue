@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 const store = useCartStore()
 const productStore = useProductStore()
@@ -11,16 +11,17 @@ const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 const { products } = storeToRefs(productStore)
 
+const route = useRoute()
+const router = useRouter()
+
+const dialog = ref()
 const snackbar = ref(false)
 const text = ref('')
 const timeout = 2500
 const snackbarColor = ref('')
-function cartText(count){
-  if(!count){
-    return 'this cart is empty'
-  }else{
-    return `You have ${count} items in this cart`
-  }
+
+function cartText(count) {
+  return !count ? 'this cart is empty' : `You have ${count} items in this cart`
 }
 async function createNewCart() {
   let res = await store.createCart()
@@ -42,6 +43,19 @@ async function deleteCart(cartId) {
   }
 }
 
+async function editCart(cartId) {
+  if (route.params.id) {
+    switchCart(cartId)
+  } else {
+    switchCart(cartId)
+    router.push('/cart')
+  }
+  dialog.value = false
+}
+
+const close = () => (dialog.value = false)
+const open = () => (dialog.value = true)
+
 function showSnackbar(customText, color) {
   if (snackbar.value) {
     snackbar.value = false
@@ -58,11 +72,10 @@ function showSnackbar(customText, color) {
 </script>
 
 <template>
-  <v-dialog width="700">
-    <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" text="Manage Carts"> </v-btn>
-    </template>
-    <template v-slot:default="{ isActive }">
+  <div>
+    <v-btn @click.stop="open">show dialog</v-btn>
+
+    <v-dialog width="700" v-model="dialog">
       <v-card class="mb-3 px-2">
         <div class="d-flex justify-center my-2">
           <div class="text-h4">Manage Carts</div>
@@ -74,11 +87,11 @@ function showSnackbar(customText, color) {
           :key="key"
           scrollable
         >
-          <v-card-text>{{cartText(value.total_items)}}</v-card-text>
-          <v-sheet class="mx-2 rounded d-flex" >
+          <v-card-text>{{ cartText(value.total_items) }}</v-card-text>
+          <v-sheet class="mx-2 rounded d-flex">
             <v-slide-group class="pa-2 items-slide" show-arrows>
-              <v-slide-group-item v-for="item in value.items" >
-                <div class="item-small-view elevation-3" >
+              <v-slide-group-item v-for="item in value.items">
+                <div class="item-small-view elevation-3">
                   <v-img
                     heigh="50"
                     class="img-icon"
@@ -86,32 +99,34 @@ function showSnackbar(customText, color) {
                     cover
                   >
                   </v-img>
-                  <div class="text-body-1">{{ item.title }}  </div>
+                  <div class="text-body-1">{{ item.title }}</div>
                   <div class="text-caption">{{ item.qty }}</div>
                 </div>
               </v-slide-group-item>
             </v-slide-group>
-            <v-btn class="align-self-center" @click="isActive.value = false"><router-link to="/cart">Edit</router-link></v-btn>
+            <v-btn class="align-self-center" @click="editCart(key)">Edit</v-btn>
           </v-sheet>
           <div class="d-flex justify-center my-2">
             <v-btn class="mx-2" @click="switchCart(key)" density="comfortable">Select</v-btn>
-            <v-btn class="mx-2" @click="deleteCart(key)" density="comfortable" color="red-darken-1">Delete</v-btn>
+            <v-btn class="mx-2" @click="deleteCart(key)" density="comfortable" color="red-darken-1"
+              >Delete</v-btn
+            >
           </div>
         </v-card>
       </v-card>
       <div class="my-2 d-flex justify-center">
-       <div class="">
-        <v-btn class="mb-1 w-100" @click="createNewCart">Create New Cart</v-btn>
-        <v-btn class="w-100"  @click="isActive.value = false">Done</v-btn>
-       </div>
+        <div class="">
+          <v-btn class="mb-1 w-100" @click="createNewCart">Create New Cart</v-btn>
+          <v-btn class="w-100" @click="close">Done</v-btn>
+        </div>
       </div>
-    </template>
-  </v-dialog>
+    </v-dialog>
 
-  <v-snackbar v-model="snackbar" :timeout="timeout" :color="snackbarColor">
-    {{ text }}
-    <v-btn color="blue" variant="text" @click="snackbar = false" icon="close"> </v-btn>
-  </v-snackbar>
+    <v-snackbar v-model="snackbar" :timeout="timeout" :color="snackbarColor">
+      {{ text }}
+      <v-btn color="blue" variant="text" @click="snackbar = false" icon="close"> </v-btn>
+    </v-snackbar>
+  </div>
 </template>
 
 <style scoped>
@@ -126,7 +141,7 @@ function showSnackbar(customText, color) {
   border: solid;
   border-radius: 5%;
   border-color: rgb(201, 207, 207);
-  
+
   .img-icon {
     width: 100%;
   }

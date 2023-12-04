@@ -273,6 +273,7 @@ onMounted(() => {
   </div>
   <template v-if="pageItems">
     <div v-if="pageItems.length > 0">
+      <div>total of {{ tableItems.length }} results</div>
       <div class="d-flex flex-wrap justify-start">
         <ItemCard v-for="(item, idx) in pageItems" :key="idx" v-bind:item="item"></ItemCard>
       </div>

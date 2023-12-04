@@ -4,16 +4,14 @@ from sqlmodel import SQLModel, Field, Relationship
 import uuid
 
 ########### Items SQLModel ###########
-
-
 class ItemsBase(SQLModel):
     """For Order Information on Emails"""
     item: str
     description: str
     price: float
-    barcode: str
+    barcode: str = Field(nullable=False, unique=True)
     in_stock: int
-
+   
 
 class ItemsDetails(ItemsBase):
     """For details page, reporting and adding items to database"""
@@ -44,9 +42,10 @@ class OrderBase(SQLModel):
 
 class Order(OrderBase, table=True):
     """Order table for database"""
+    __tablename__ = "order_data"
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
     order_id: str = Field(nullable=False, unique=True)
-    order_items: List["ItemsByOrder"] = Relationship(back_populates='order')
+    order_items: List["ItemsByOrder"] = Relationship(back_populates='order', sa_relationship_kwargs={'lazy': 'selectin'})
     created_at: datetime = Field(default_factory = datetime.utcnow)
 
 
@@ -58,8 +57,10 @@ class OrderCreate(OrderBase):
 ########### OrderXItems SQLModel ###########
 class ItemsByOrderBase(SQLModel):
     """Reference to Items and Orders"""
-    order_id: Optional[int] = Field(default=None, foreign_key="order.id")
-    item_id: Optional[int] = Field(default=None, foreign_key="items.id")
+    order_id: Optional[int] = Field(default=None, foreign_key="order_data.id")
+    item_barcode: Optional[str] = Field(default=None, foreign_key="items.barcode")
+   
+    qty: int = Field(nullable=True)
 
 
 class ItemsByOrder(ItemsByOrderBase, table=True):

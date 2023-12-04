@@ -51,7 +51,7 @@ export const useCartStore = defineStore('cart', {
     },
     async addToCart(item) {
       if (!this.currentCart) {
-        this.createCart()
+        await this.createCart()
       }
 
       if (!this.inCart(item.barcode)) {

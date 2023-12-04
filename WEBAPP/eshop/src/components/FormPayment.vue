@@ -11,18 +11,15 @@ const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 
-
 const newOrder = {
   //orderId: '231108-XDBRIEKM',
   email: store.email,
-  items: [],
-  status: '',
+  address: '',
   transaction_id: '',
-  created_at: '',
-  //cartId: currentCart,//control
+  status: '',
   total: 0,
-  address: ''
-
+  items: []
+  //cartId: currentCart,//control
 }
 
 const initialState = {
@@ -54,57 +51,50 @@ function clear() {
 function processItems() {
   let orderItems = []
   let justItems = store.justItems
-  for(const item in justItems){
+  for (const item in justItems) {
     newOrder.items.push({ barcode: justItems[item].barcode }, { qty: justItems[item].qty })
-  } 
+  }
 }
 
-async function checkAvailability(){
-    
-}
-
+async function checkAvailability() {}
 
 function processPayment() {
-
-    alert(`payment successful`)
-    newOrder.total = store.carts[store.currentCart].total
-    newOrder.status = 'pending'
-    newOrder.paymentId = '1234'
-    newOrder.date = String(Date.now())
-    processItems()
-    store.deleteCart(currentCart)
-    return router.push({path: '/complete'})
-
-}   
-
+  alert(`payment successful`)
+  newOrder.total = store.carts[store.currentCart].total
+  newOrder.status = 'pending'
+  newOrder.paymentId = '1234'
+  newOrder.date = String(Date.now())
+  processItems()
+  store.deleteCart(currentCart)
+  return router.push({ path: '/complete' })
+}
 </script>
 
 <template>
-  <div class="stepper-item d-flex flex-column ">
-   <v-sheet class="column-item d-flex justify-center align-center" >
-    <div class="w-50">
-      <form action="">
-      <v-text-field label="Name on Card" :error-messages="'error'" required></v-text-field>
-      <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
-      <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
-      <v-text-field label="Expiration Date" :error-messages="'error'" required></v-text-field>
-    </form>
-    </div>
-   </v-sheet>
+  <div class="stepper-item d-flex flex-column">
+    <v-sheet class="column-item d-flex justify-center align-center">
+      <div class="w-50">
+        <form action="">
+          <v-text-field label="Name on Card" :error-messages="'error'" required></v-text-field>
+          <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
+          <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
+          <v-text-field label="Expiration Date" :error-messages="'error'" required></v-text-field>
+        </form>
+      </div>
+    </v-sheet>
     <v-row class="d-flex justify-space-between column-item align-end mb-2">
       <v-col class="v-col-md-4 v-col-sm-8 justify-center">
-          <v-btn class="w-50" @click="$emit('click-prev')">Go Back</v-btn>
-        </v-col>
-        <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
-          <v-btn class="me-4 w-50" @click="processPayment()" >Complete Order</v-btn>
-        </v-col>
+        <v-btn class="w-50" @click="$emit('click-prev')">Go Back</v-btn>
+      </v-col>
+      <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
+        <v-btn class="me-4 w-50" @click="processPayment()">Complete Order</v-btn>
+      </v-col>
     </v-row>
   </div>
 </template>
 
 <style scoped>
-.column-item{
+.column-item {
   flex: 1;
-
 }
 </style>

@@ -1,5 +1,5 @@
 from ..db import getSession
-from ..models import Items, ItemsDetails, ItemsBase
+from ..models import Items, ItemsDetails, ItemsBase, ItemsByOrder
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, or_
 
@@ -20,6 +20,7 @@ async def get_items(limit: int, skip: int, price_from: int | None,
 
     result = await session.execute(statement)
     items = result.scalars().all()
+    print(items)
     return items
 
 
@@ -30,12 +31,9 @@ async def item_by_id(barcode: str, session: AsyncSession):
     return item
 
 
-async def search_items(keyword: str, session: AsyncSession):
-    """finds items based on keyword"""
-    pass
-
 
 async def add_item(item: Items, session: AsyncSession):
+    """adds single item to database"""
     db_item = Items.from_orm(item)
     session.add(db_item)
     await session.commit()
@@ -44,6 +42,7 @@ async def add_item(item: Items, session: AsyncSession):
 
 
 async def update_item_sold(item_id: int, sold: int, session: AsyncSession):
+    """for every sold item updates the stock"""
     statement = select(Items).where(Items.id == item_id)
     result = session.exe(statement)
     item = result.first()
@@ -51,7 +50,6 @@ async def update_item_sold(item_id: int, sold: int, session: AsyncSession):
         raise ValueError("Item does not exists")
     item.in_stock -= sold
     item.sold += sold
-
     session.add(item)
     session.commit()
     session.refresh(item)
@@ -59,6 +57,7 @@ async def update_item_sold(item_id: int, sold: int, session: AsyncSession):
 
 
 async def create_items(items: list[Items], session: AsyncSession):
+    """creates from a list of items"""
     for item in items:
         temp = Items.from_orm(item)
         session.add(temp)

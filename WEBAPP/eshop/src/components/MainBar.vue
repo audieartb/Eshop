@@ -4,6 +4,8 @@ import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { RouterLink } from 'vue-router'
 import  ManageCartDialog from './ManageCartDialog.vue'
+
+
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
@@ -15,7 +17,7 @@ const { currentCart } = storeToRefs(store)
       <router-link to="/"> <div class="text-h3 ml-5">What are you buying?</div></router-link>
 
       <template v-slot:append>
-        <v-btn icon="mdi-magnify"></v-btn>
+        <v-btn icon="mdi-receipt"><router-link to="/order/request"></router-link></v-btn>
         <v-btn icon="mdi-heart"> </v-btn>
         <v-btn v-if="carts[currentCart]" stacked id="cart-options">
           <v-badge :content="carts[currentCart].total_items" color="error">

@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from app.items import routes as ItemRoutes
 from app.orders import routes as OrderRoutes
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +9,7 @@ origins =[
 ]
 
 app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
