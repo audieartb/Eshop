@@ -4,8 +4,12 @@ from sqlmodel import create_engine, SQLModel, Session
 from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
 from sqlalchemy.orm import sessionmaker
 
+DATABASE_USERNAME= os.environ.get("DATABASE_USERNAME")
+DATABASE_PASSWORD= os.environ.get("DATABASE_PASSWORD")
+DATABASE_HOSTNAME= os.environ.get("DATABASE_HOSTNAME")
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
-DBURL = 'postgresql+asyncpg://eshop_db_user:eshop_db_password@64.225.72.2:5432/fastapi_eshop'
+DBURL = f'postgresql+asyncpg://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOSTNAME}:5432/fastapi_eshop'
 
 engine = AsyncEngine(create_engine(DBURL,echo=True, future=True))
 
