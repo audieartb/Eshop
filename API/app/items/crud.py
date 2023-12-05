@@ -9,7 +9,6 @@ async def get_items(limit: int, skip: int, price_from: int | None,
     """Handles all queries to multiple items"""
     statement = select(Items).offset(skip).limit(limit)
     if search:
-        print('adds filter to ' + search)
         statement = statement.filter(or_(
             Items.item.regexp_match(search, 'i'), Items.description.regexp_match(search, 'i')))
 
@@ -20,7 +19,6 @@ async def get_items(limit: int, skip: int, price_from: int | None,
 
     result = await session.execute(statement)
     items = result.scalars().all()
-    print(items)
     return items
 
 

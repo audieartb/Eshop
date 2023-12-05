@@ -13,7 +13,6 @@ const stepper = ref()
 const emit  = defineEmits(['next'])
 async function addToCart(item) {
   await store.addToCart(item)
-  console.log(store.carts[store.currentCart].items)
 }
 
 function next(){

@@ -17,12 +17,10 @@ function removeFromCart(item) {
 }
 async function addToCart(item) {
   await store.addToCart(item)
-  console.log(store.carts[store.currentCart].items)
 }
 function inCart(barcode) {
   try {
     let item = carts[currentCart].items[barcode]
-    console.log(item)
     if (item) {
       return true
     }
@@ -40,7 +38,7 @@ function isFavorite(barcode) {
 }
 
 function addToFavorites(barcode) {
-  console.log(barcode)
+
   let idx = getFavorites.value.indexOf(barcode)
   if (idx < 0) {
     getFavorites.value.push(barcode)

@@ -13,7 +13,6 @@ const cartRef = ref()
 
 async function addToCart(item) {
   await store.addToCart(item)
-  console.log(store.carts[store.currentCart].items)
 }
 
 
@@ -48,7 +47,7 @@ function removeFromCart(item) {
               ></v-btn>
             </div>
             <div>
-              <v-text>{{ carts[currentCart].items[item.barcode].qty }}</v-text>
+              <div>{{ carts[currentCart].items[item.barcode].qty }}</div>
             </div>
             <div class="align-self-end">
               <v-btn

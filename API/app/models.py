@@ -35,7 +35,6 @@ class OrderBase(SQLModel):
     """Order Details"""
     email: str
     address: str
-    transaction_id: str
     status: str
     total: float
     
@@ -47,11 +46,12 @@ class Order(OrderBase, table=True):
     order_id: str = Field(nullable=False, unique=True)
     order_items: List["ItemsByOrder"] = Relationship(back_populates='order', sa_relationship_kwargs={'lazy': 'selectin'})
     created_at: datetime = Field(default_factory = datetime.utcnow)
-
+    transaction_id: str = Field(default=None, nullable=False)
 
 class OrderCreate(OrderBase):
     """Order creation must include at least 1 item"""
     items: List[OrderItem]
+    delivery_type: str
 
 
 ########### OrderXItems SQLModel ###########

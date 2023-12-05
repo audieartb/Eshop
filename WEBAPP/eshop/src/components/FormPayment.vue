@@ -1,26 +1,17 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
-import { email, required, numeric, minLength, maxLength } from '@vuelidate/validators'
+import { required, numeric, minLength, maxLength } from '@vuelidate/validators'
 import router from '../router'
+import {postOrder} from '../services/orders'
 
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
-
-const newOrder = {
-  //orderId: '231108-XDBRIEKM',
-  email: store.email,
-  address: '',
-  transaction_id: '',
-  status: '',
-  total: 0,
-  items: []
-  //cartId: currentCart,//control
-}
+const { form_data } = storeToRefs(store)
 
 const initialState = {
   name: '',
@@ -34,8 +25,8 @@ const formState = reactive({
 
 const rules = {
   name: { required },
-  number: { required, numeric, minLength: 1, maxLength: 16 },
-  cvv: { required, numeric },
+  number: { required, numeric, minLength: 15, maxLength: 16 },
+  cvv: { required, numeric, minLength: 3, maxLength: 3 },
   exp: { required }
 }
 
@@ -49,39 +40,57 @@ function clear() {
 }
 
 function processItems() {
-  let orderItems = []
-  let justItems = store.justItems
-  for (const item in justItems) {
-    newOrder.items.push({ barcode: justItems[item].barcode }, { qty: justItems[item].qty })
+  let justItems = []
+  for (const item in store.justItems) {
+    justItems.push({ barcode: store.justItems[item].barcode, qty: store.justItems[item].qty })
   }
+  store.form_data.items = justItems
 }
 
-async function checkAvailability() {}
 
-function processPayment() {
+async function processPayment() {
   alert(`payment successful`)
-  newOrder.total = store.carts[store.currentCart].total
-  newOrder.status = 'pending'
-  newOrder.paymentId = '1234'
-  newOrder.date = String(Date.now())
-  processItems()
-  store.deleteCart(currentCart)
-  return router.push({ path: '/complete' })
+  form_data['total'] = store.carts[store.currentCart].total.toFixed(2)
+  // console.log("current carts", carts)
+  // store.deleteCart(currentCart)
+  // console.log("after delete", carts)
+  await postOrder(form_data.value)
+  //return router.push({ path: '/complete' })
 }
+
+onMounted(()=>{
+  processItems()
+})
+
 </script>
 
 <template>
   <div class="stepper-item d-flex flex-column">
-    <v-sheet class="column-item d-flex justify-center align-center">
-      <div class="w-50">
-        <form action="">
-          <v-text-field label="Name on Card" :error-messages="'error'" required></v-text-field>
-          <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
-          <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
-          <v-text-field label="Expiration Date" :error-messages="'error'" required></v-text-field>
-        </form>
-      </div>
-    </v-sheet>
+    <v-row>
+      <v-col class=" col-6">
+        <v-card>
+          <v-card-title>Summary</v-card-title>
+          {{ form_data }}
+        </v-card>
+      </v-col>
+      <v-col class=" col">
+        <v-sheet class="column-item d-flex justify-center align-center">
+          <div class="w-100">
+            <form action="">
+              <v-text-field label="Name on Card" :error-messages="'error'" required></v-text-field>
+              <v-text-field label="Card Number" :error-messages="'error'" required></v-text-field>
+              <v-text-field label="Cvv" :error-messages="'error'" required></v-text-field>
+              <v-text-field
+                label="Expiration Date"
+                :error-messages="'error'"
+                required
+              ></v-text-field>
+            </form>
+          </div>
+        </v-sheet>
+      </v-col>
+    </v-row>
+
     <v-row class="d-flex justify-space-between column-item align-end mb-2">
       <v-col class="v-col-md-4 v-col-sm-8 justify-center">
         <v-btn class="w-50" @click="$emit('click-prev')">Go Back</v-btn>

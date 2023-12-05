@@ -4,8 +4,6 @@ from email.mime.text import MIMEText
 from .token_utils import token
 import os
 
-
-
 EMAIL_USER= os.environ.get('EMAIL_USER')
 EMAIL_PASSWORD=os.environ.get('EMAIL_PASSWORD')
 EMAIL_PORT=os.environ.get('EMAIL_PORT')
@@ -14,6 +12,7 @@ EMAIL_DOMAIN=os.environ.get('EMAIL_DOMAIN')
 VERIFICATION_ENDPOINT  = 'http://localhost:5173/verification/'
 
 def send_order_confirmation(email:str, order_id: str):
+    """Sends order confirmation email"""
     _token = token(email=email, order_id=order_id)
     _url = VERIFICATION_ENDPOINT+_token+'/'
     message = format_confirmation_email(url=_url, email_to=email)
@@ -40,6 +39,7 @@ def format_email(order, items_list, orders_list ,email_to):
 
 
 def format_confirmation_email(url, email_to):
+    """Formats order confirmation email"""
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'Please confirm your order'
     msg['From'] = "audie.artavia19@gmail.com"

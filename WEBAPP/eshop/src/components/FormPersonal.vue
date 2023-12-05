@@ -4,17 +4,21 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { useVuelidate } from '@vuelidate/core'
-import { email, required, numeric } from '@vuelidate/validators'
-const emit = defineEmits(['click-next', 'click-prev'])
+import { email, required, numeric, helpers } from '@vuelidate/validators'
+
 const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
 
+const emit = defineEmits(['click-next', 'click-prev'])
+const deliveryOpts = ['quick', 'slow', 'super slow']
+
 const initialState = {
   name: '',
   lastname: '',
   email: '',
+  verify_email: '',
   country: '',
   city: '',
   address: '',
@@ -26,12 +30,15 @@ const state = reactive({
   ...initialState
 })
 
-const deliveryOpts = ['quick', 'slow', 'super slow']
+const isMatch = () => {
+  return state.email === state.verify_email
+}
 
 const rules = {
   name: { required },
   lastname: { required },
   email: { required, email },
+  verify_email: { required, email, required: helpers.withMessage('Emails must match', isMatch) },
   country: { required },
   city: { required },
   address: { required },
@@ -49,15 +56,26 @@ function clear() {
 }
 
 async function submit() {
+  
   const result = await v$.value.$validate()
-  emit('click-next')
-  // if (result) {
-  //   store.email = state.email
-  //   console.log(state)
-  //   emit('click-next')
-  // }else{
-  //   alert("Errors in form")
-  // }
+  if (result) {
+    const form_data = {
+      email: state.email,
+      address: `${state.country}, ${state.city}, ${state.address}, ${state.zip}`,
+      status: 'pending',
+      total: 0,
+      items: [],
+      delivery_type: state.delivery,
+    }
+    store.form_data = form_data
+    emit('click-next')
+  } else {
+    alert('Errors in form')
+  }
+}
+
+function disablePaste(event) {
+  event.preventDefault()
 }
 </script>
 
@@ -106,6 +124,20 @@ async function submit() {
             :error-messages="v$.email.$errors.map((e) => e.$message)"
             required
             autocomplete="on"
+          ></v-text-field>
+        </v-col>
+        <v-col class="v-col-md-6 v-col-sm-12">
+          <v-text-field
+            id="email-field"
+            variant="outlined"
+            v-model="state.verify_email"
+            @paste="disablePaste"
+            @input="v$.verify_email.$touch"
+            @blur="v$.verify_email.$touch"
+            label="Verify Email"
+            :error-messages="v$.verify_email.$errors.map((e) => e.$message)"
+            required
+            autocomplete="off"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -181,10 +213,14 @@ async function submit() {
     </v-container>
     <v-row class="d-flex justify-space-between column-item align-end mb-2">
       <v-col class="v-col-md-4 v-col-sm-8 justify-center">
-        <v-btn class="w-50" @click="$emit('click-prev')">Go Back <v-icon icon="mdi-restart"></v-icon></v-btn>
+        <v-btn class="w-50" @click="$emit('click-prev')"
+          >Go Back <v-icon icon="mdi-restart"></v-icon
+        ></v-btn>
       </v-col>
       <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-center">
-        <v-btn class="w-50" @click="clear">Clear Form <v-icon icon="mdi-delete-sweep-outline"></v-icon></v-btn>
+        <v-btn class="w-50" @click="clear"
+          >Clear Form <v-icon icon="mdi-delete-sweep-outline"></v-icon
+        ></v-btn>
       </v-col>
       <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
         <v-btn class="w-50" @click="submit">Submit</v-btn>
@@ -198,8 +234,7 @@ async function submit() {
   margin: 0;
 }
 
-.column-item{
+.column-item {
   flex: 1;
-
 }
 </style>

@@ -7,7 +7,8 @@ export const useCartStore = defineStore('cart', {
       email: '',
       currentCart: null,
       carts: {},
-      favorites: []
+      favorites: [],
+      form_data: {}
     }
   },
   getters: {
@@ -22,7 +23,7 @@ export const useCartStore = defineStore('cart', {
       return state.favorites
     },
     getCarts(state){
-      return Object.keys(this.carts)
+      return Object.keys(state.carts)
     }
   },
   actions: {

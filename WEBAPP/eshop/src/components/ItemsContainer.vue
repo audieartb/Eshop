@@ -3,15 +3,15 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useProductStore } from '@/stores/products'
 import { storeToRefs } from 'pinia'
-import axios from 'axios'
+import { getItems } from '../services/items'
 import ItemCard from './ItemCard.vue'
+
 const store = useCartStore()
 const productsStore = useProductStore()
 const { getFavorites } = storeToRefs(store)
-const baseURL = 'http://localhost:8000/api/items'
-const URL = 'http://localhost:8000/api/items?skip=0&limit=5&priceFrom=50&priceTo=600&search=you'
 const search = ref('')
 const showFavorites = ref(false)
+
 const pagination = ref({
   pageCount: 7,
   itemsPerPage: 9,
@@ -19,6 +19,7 @@ const pagination = ref({
   end: 0,
   pageIdx: 1
 })
+
 const isFiltered = ref(false)
 const currentPage = ref()
 const priceFrom = ref(null)
@@ -26,72 +27,7 @@ const priceTo = ref(null)
 const tableItems = ref(null)
 const pageItems = ref([])
 const items = ref([])
-const itemsold = ref([
-  {
-    barcode: '100000000011',
-    item: 'Coffee Maker',
-    description: 'Programmable coffee maker with timer',
-    in_stock: 15,
-    price: 49.99,
-    sold: 5
-  },
-  {
-    barcode: '100000000012',
-    item: 'Smart TV',
-    description: '4K smart TV for your entertainment',
-    in_stock: 14,
-    price: 699.99,
-    sold: 3
-  },
-  {
-    barcode: '100000000013',
-    item: 'Sofa',
-    description: 'Comfortable sofa for your living room',
-    in_stock: 25,
-    price: 499.99,
-    sold: 6
-  },
-  {
-    barcode: '100000000014',
-    item: 'Gaming Chair',
-    description: 'Comfortable gaming chair for gamers',
-    in_stock: 19,
-    price: 159.99,
-    sold: 6
-  },
-  {
-    barcode: '100000000011',
-    item: 'Coffee Maker',
-    description: 'Programmable coffee maker with timer',
-    in_stock: 15,
-    price: 49.99,
-    sold: 5
-  },
-  {
-    barcode: '100000000012',
-    item: 'Smart TV',
-    description: '4K smart TV for your entertainment',
-    in_stock: 14,
-    price: 699.99,
-    sold: 3
-  },
-  {
-    barcode: '100000000013',
-    item: 'Sofa',
-    description: 'Comfortable sofa for your living room',
-    in_stock: 25,
-    price: 499.99,
-    sold: 6
-  },
-  {
-    barcode: '100000000014',
-    item: 'Gaming Chair',
-    description: 'Comfortable gaming chair for gamers',
-    in_stock: 19,
-    price: 159.99,
-    sold: 6
-  }
-])
+
 
 // Pagination Control
 function initPage() {
@@ -102,7 +38,7 @@ function initPage() {
       pageItems.value = items.value
     } else {
       pageItems.value = tableItems.value.slice(0, pagination.value.itemsPerPage)
-      console.log(pageItems.value.length)
+    
       pagination.value.end = pageItems.value.length - 1
     }
   }
@@ -112,7 +48,6 @@ function refreshPagination() {
     pageItems.value = tableItems.value
   } else {
     pageItems.value = tableItems.value.slice(0, pagination.value.itemsPerPage)
-    console.log(pageItems.value.length)
     pagination.value.end = pageItems.value.length - 1
   }
 }
@@ -120,7 +55,7 @@ function refreshPagination() {
 watch(currentPage, (newCurrentPage, oldCurrentPage) => {
   let start = (newCurrentPage - 1) * pagination.value.itemsPerPage
   let end = newCurrentPage * pagination.value.itemsPerPage
-  console.log(start, end)
+
   pageItems.value = tableItems.value.slice(start, end)
 })
 
@@ -158,7 +93,7 @@ async function filterControl(event) {
     await searchItems(false)
     tableItems.value = await applyFilter(tableItems.value)
   } else if (!event && !search.value) {
-    console.log('no search')
+
     tableItems.value = await applyFilter(items.value)
   }
   if (!priceTo && !priceFrom) {
@@ -192,25 +127,17 @@ watch(showFavorites, async (newShowFavorites, oldShowFavorites) => {
 })
 
 //Requesting data from API and LocalStorage
-async function getItems() {
-  tableItems.value = items.value
-  return
-  axios
-    .get(baseURL)
-    .then((res) => {
-      console.log(res)
-      if (!items.value) {
-        items.value = res.data
-      } else {
-        items.value.push(res.data)
-      }
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+async function checkLocalStorage() {
+  
+  if(productsStore.products.length <= 0){
+    productsStore.products = await getItems()
+  }
+
+  return 
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await checkLocalStorage()
   initPage()
 })
 </script>

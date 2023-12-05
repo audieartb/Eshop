@@ -14,7 +14,7 @@ router = APIRouter()
 async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSession)):
     """Creates Order with status Pending"""
     try:
-        print(order)
+      
         res = await crud.create_order(order=order, session=session)
         send_order_confirmation(email=res.email, order_id=res.order_id)
         return res
@@ -28,7 +28,6 @@ async def mail_order(email: str, session: AsyncSession = Depends(getSession)):
     try:
         res = await crud.find_order(email=email, session=session)
         orders_list = {x.id for x in res}
-        print('ORDERS LIST =====> ', orders_list)
         items_list = await crud.get_items_order(orders_list=orders_list, session=session)
 
         return items_list
@@ -36,14 +35,23 @@ async def mail_order(email: str, session: AsyncSession = Depends(getSession)):
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.post("/confirmation")
+@router.post("/orders/confirmation", status_code=200)
 async def order_confirmation(token: str, session: AsyncSession = Depends(getSession)):
     """Verifies token from user and changes status of order"""
     try:
         _data = verify_token(token=token)
-        if (_data):
+        if (_data['check']):
             res = await crud.change_order_status(
                 order_id=_data['data']['order_id'], email=_data['data']['email'],  status='in_progress', session=session)
             return res
+        else:
+            raise HTTPException(status_code=400, detail='This link is no longer valid')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+@router.post("/orders/resend")
+async def resend_email(token: str, session: AsyncSession = Depends(getSession)):
+    try:
+        pass
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
