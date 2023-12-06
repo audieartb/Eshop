@@ -30,15 +30,14 @@ async def item_by_id(barcode: str, session: AsyncSession):
 
 
 async def check_item_stock(items: list[OrderItem], session: AsyncSession):
+    """Retrives only items that have enough stock, Cancels all if one fails"""
     out_of_stock =[]
     try:
         for item in items:
-            print('getting ====>', item)
             result = await session.exec(select(Items).where(Items.barcode == item.barcode).where(Items.in_stock>item.qty))
             db_item = result.first()
             
             if db_item is None:
-                print('no result ===> ')
                 out_of_stock.append(item)
                 continue
 
