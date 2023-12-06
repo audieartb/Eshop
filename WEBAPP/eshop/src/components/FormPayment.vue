@@ -2,15 +2,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minLength, maxLength } from '@vuelidate/validators'
 import router from '../router'
 import {postOrder} from '../services/orders'
 
 const store = useCartStore()
-const { carts } = storeToRefs(store)
-const { currentCart } = storeToRefs(store)
 const { form_data } = storeToRefs(store)
 
 const initialState = {
@@ -52,10 +49,10 @@ async function processPayment() {
   alert(`payment successful`)
   form_data['total'] = store.carts[store.currentCart].total.toFixed(2)
   // console.log("current carts", carts)
-  // store.deleteCart(currentCart)
+  store.deleteCart(store.currentCart)
   // console.log("after delete", carts)
   await postOrder(form_data.value)
-  //return router.push({ path: '/complete' })
+  return router.push({ path: '/complete' })
 }
 
 onMounted(()=>{

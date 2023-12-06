@@ -91,7 +91,7 @@ export const useCartStore = defineStore('cart', {
     deleteCart(cartId) {
       delete this.carts[cartId]
       if(this.getCarts.length>0){
-        this.currentCart = this.carts[this.getCarts[0]]
+        this.currentCart = this.getCarts[0]
       }else{
         this.currentCart = null
       }

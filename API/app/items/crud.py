@@ -1,5 +1,5 @@
 from ..db import getSession
-from ..models import Items, ItemsDetails, ItemsBase, ItemsByOrder
+from ..models import Items, ItemsDetails, ItemsBase, ItemsByOrder, OrderItem
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, or_
 
@@ -28,6 +28,32 @@ async def item_by_id(barcode: str, session: AsyncSession):
     item = result.first()
     return item
 
+
+async def check_item_stock(items: list[OrderItem], session: AsyncSession):
+    out_of_stock =[]
+    try:
+        for item in items:
+            print('getting ====>', item)
+            result = await session.exec(select(Items).where(Items.barcode == item.barcode).where(Items.in_stock>item.qty))
+            db_item = result.first()
+            
+            if db_item is None:
+                print('no result ===> ')
+                out_of_stock.append(item)
+                continue
+
+            db_item.in_stock -= item.qty
+            db_item.sold += item.qty
+            session.add(db_item)
+      
+        if(out_of_stock):
+            return out_of_stock
+        await session.commit()
+        return None
+        
+    except Exception as e:
+        await session.rollback()
+        raise e
 
 
 async def add_item(item: Items, session: AsyncSession):

@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI, Request
-from app.items import routes as ItemRoutes
-from app.orders import routes as OrderRoutes
+from .items import routes as ItemRoutes
+from .orders import routes as OrderRoutes
 from fastapi.middleware.cors import CORSMiddleware
 
 origins =[
@@ -24,3 +24,4 @@ app.include_router(OrderRoutes.router, prefix="/api")
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+

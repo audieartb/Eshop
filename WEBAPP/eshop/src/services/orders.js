@@ -8,7 +8,7 @@ const HEADERS = {
 }
 
 export async function postOrder(order_data){
-
+    
     const data = JSON.stringify(order_data)
     axios.post(BASEURL,data, {headers:HEADERS}).then((res)=>{
         if(res.status== !200){

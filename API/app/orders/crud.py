@@ -29,9 +29,6 @@ async def create_order(order: OrderCreate, session: AsyncSession) -> str:
     return db_order
 
 
-async def check_item_stock():
-    pass
-
 async def change_order_status(order_id: str, email:str, status: str, session: AsyncSession):
 
     stmt = select(Order).where(Order.order_id == order_id).where(Order.email == email)
