@@ -16,7 +16,15 @@
 .stepper-item{
   min-height: 620px;
 }
+a{
+  color: inherit;
+  text-decoration: inherit;
+}
 
+.store-title{
+    background-color: orange;
+    height: 100%;
+}
 /*
 a,
 .green {

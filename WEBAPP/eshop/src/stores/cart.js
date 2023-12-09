@@ -8,7 +8,8 @@ export const useCartStore = defineStore('cart', {
       currentCart: null,
       carts: {},
       favorites: [],
-      form_data: {}
+      form_data: {},
+      in_progress: false
     }
   },
   getters: {
@@ -33,7 +34,7 @@ export const useCartStore = defineStore('cart', {
       } else {
         let cart = {
           items: {},
-          total: 0,
+          total: 0.00,
           total_items: 0
         }
         this.setCurrentCart(null)

@@ -1,10 +1,12 @@
 from datetime import date, datetime
 import string
 import random
+import json
 from ..db import getSession
 from ..models import Order, OrderCreate, OrderItem, ItemsByOrder, Items
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, join
+from sqlalchemy.orm import selectinload
 
 
 async def create_order(order: OrderCreate, session: AsyncSession) -> str:
@@ -42,19 +44,27 @@ async def change_order_status(order_id: str, email:str, status: str, session: As
 
 async def get_items_order(orders_list: list[str], session: AsyncSession):
     """get items from order"""
-    stmt2 = select(Order.id, ItemsByOrder.qty, ItemsByOrder.order_id, Items).select_from(join(ItemsByOrder, Items)).where(
+    stmt2 = select(ItemsByOrder.qty, ItemsByOrder.order_id, Items.price, Items.item).select_from(join(ItemsByOrder, Items)).where(
         Order.id.in_(orders_list)).where(Order.id == ItemsByOrder.order_id).order_by(Order.id)
 
-    stmt1 = select(Order.id, ItemsByOrder).where(
+    stmt1 = select( ItemsByOrder ).select_from().where(
         ItemsByOrder.order_id.in_(orders_list)).where(Order.id == ItemsByOrder.order_id)
     # result = select(ItemsByOrder, Items).where(ItemsByOrder.order_id == order_id)
     #                             .where(ItemsByOrder.item_barcode == Items.barcode)
-    result = await session.exec(stmt1)
+    
+    stmt3 = select(ItemsByOrder).options(selectinload(ItemsByOrder.item_ref, ItemsByOrder.order)).where(ItemsByOrder.order_id.in_(orders_list))
+    
+    result = await session.exec(stmt2)
 
     items = result.all()
 
     return items
 
+async def get_history(email:str, session: AsyncSession):
+
+    stmt = select(Order.id, ItemsByOrder, )
+
+    pass
 
 def create_item_by_order(order_id: string, order_items: list[OrderItem]):
     """creates relationship Items X Order"""

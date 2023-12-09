@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import CartView from '../views/CartView.vue'
 import PaymentView from '../views/PaymentView.vue'
 import OrderCompletedView from '../views/OrderCompletedView.vue'
-import OrderRequestView from '../views/OrderRequestView.vue'
+import OrderHistoryView from '../views/OrderHistoryView.vue'
 import OrderConfirmation from '../views/OrderConfirmation.vue'
 
 const router = createRouter({
@@ -15,18 +15,9 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    {
       path:'/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue'),
-    
     },
     {
       path:'/payment',
@@ -39,9 +30,9 @@ const router = createRouter({
       component: OrderCompletedView
     },
     {
-      path: '/order/request',
-      name: 'order_request',
-      component: OrderRequestView
+      path: '/order/history',
+      name: 'order_history',
+      component: OrderHistoryView
     },
     {
       path: '/verification/:token',

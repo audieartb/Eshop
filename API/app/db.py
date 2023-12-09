@@ -3,6 +3,7 @@ import os
 from sqlmodel import create_engine, SQLModel, Session
 from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
 from sqlalchemy.orm import sessionmaker
+from .models import Items, Order, ItemsByOrder
 
 DATABASE_USERNAME= os.environ.get("DATABASE_USERNAME")
 DATABASE_PASSWORD= os.environ.get("DATABASE_PASSWORD")

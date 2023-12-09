@@ -6,7 +6,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from ..utils.email_utils import send_order_confirmation
+from ..utils.email_utils import send_order_confirmation, send_order_history
 from ..utils.token_utils import verify_token
 
 router = APIRouter()
@@ -29,15 +29,16 @@ async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSes
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/orders/details")
+@router.post("/orders/history", status_code=200)
 async def mail_order(email: str, session: AsyncSession = Depends(getSession)):
     """Finds all orders related to email and sends them"""
     try:
         res = await crud.find_order(email=email, session=session)
         orders_list = {x.id for x in res}
         items_list = await crud.get_items_order(orders_list=orders_list, session=session)
-
-        return items_list
+        
+        await send_order_history(email=email, items_list=items_list)
+        return 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 

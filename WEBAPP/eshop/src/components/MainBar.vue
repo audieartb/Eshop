@@ -2,10 +2,9 @@
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
-import { RouterLink } from 'vue-router'
-import  ManageCartDialog from './ManageCartDialog.vue'
-
-
+import { RouterLink, useRouter } from 'vue-router'
+import ManageCartDialog from './ManageCartDialog.vue'
+const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
@@ -14,11 +13,14 @@ const { currentCart } = storeToRefs(store)
 <template>
   <div>
     <v-app-bar>
-      <router-link to="/"> <div class="text-h3 ml-5">What are you buying?</div></router-link>
-
+      <div><router-link to="/"> <div class="text-h4 ml-5 store-title">What are you buying?</div></router-link></div>
       <template v-slot:append>
-        <v-btn icon="mdi-receipt"><router-link to="/order/request"></router-link></v-btn>
-        <v-btn icon="mdi-heart"> </v-btn>
+        <v-tooltip text="Order History">
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" icon="mdi-receipt" @click="router.push('/order/history')">
+            </v-btn>
+          </template>
+        </v-tooltip>
         <v-btn v-if="carts[currentCart]" stacked id="cart-options">
           <v-badge :content="carts[currentCart].total_items" color="error">
             <v-icon>mdi-cart</v-icon>
@@ -42,5 +44,3 @@ const { currentCart } = storeToRefs(store)
     </v-app-bar>
   </div>
 </template>
-
-<style scoped></style>

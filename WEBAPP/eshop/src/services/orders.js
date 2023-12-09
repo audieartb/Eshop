@@ -17,3 +17,8 @@ export async function postOrder(order_data){
         return null
     })
 }
+
+export async function orderHistory(email){
+    
+    return await axios.post(BASEURL+'/history?email='+email, {headers:HEADERS})
+}

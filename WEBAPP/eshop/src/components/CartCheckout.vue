@@ -17,6 +17,9 @@ async function addToCart(item) {
 
 
 function removeFromCart(item) {
+  if(carts[currentCart].items[item].qty == 1){
+    
+  }
   store.removeOneFromCart(item)
 }
 </script>
@@ -33,7 +36,7 @@ function removeFromCart(item) {
             </v-card-title>
             <v-card-text class="pl-0"> Price: {{ item.price }} </v-card-text>
             <v-card-text class="pa-0">
-              {{ item.qty }} items in cart: {{ item.qty * item.price }}</v-card-text
+              {{ item.qty }} items in cart: {{ (item.qty * item.price ).toFixed(2)}}</v-card-text
             >
           </v-card-item>
           <v-card-item class="d-flex flex-column" height="100%">

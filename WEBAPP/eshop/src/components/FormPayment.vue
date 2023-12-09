@@ -2,10 +2,11 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
+import { useProductStore } from '@/stores/products'
 import { useVuelidate } from '@vuelidate/core'
 import { required, numeric, minLength, maxLength } from '@vuelidate/validators'
 import router from '../router'
-import {postOrder} from '../services/orders'
+import { postOrder } from '../services/orders'
 
 const store = useCartStore()
 const { form_data } = storeToRefs(store)
@@ -44,33 +45,41 @@ function processItems() {
   store.form_data.items = justItems
 }
 
-
 async function processPayment() {
   alert(`payment successful`)
   form_data['total'] = store.carts[store.currentCart].total.toFixed(2)
-  // console.log("current carts", carts)
   store.deleteCart(store.currentCart)
-  // console.log("after delete", carts)
-  await postOrder(form_data.value)
+  res = await postOrder(form_data.value)
   return router.push({ path: '/complete' })
 }
 
-onMounted(()=>{
+onMounted(() => {
   processItems()
 })
-
 </script>
 
 <template>
   <div class="stepper-item d-flex flex-column">
     <v-row>
-      <v-col class=" col-6">
+      <v-col class="col-6">
         <v-card>
           <v-card-title>Summary</v-card-title>
-          {{ form_data }}
+          
+         <v-card-item>
+
+          <v-card-text>email: {{ form_data.email }}</v-card-text>
+          <v-card-text>Address: {{ form_data.address }}</v-card-text>
+          <v-card-text>Delivery type: {{ form_data.delivery_type }}</v-card-text>
+         </v-card-item>
+          <v-card-item>
+            <v-card-text v-for="item in store.carts[store.currentCart].items ">
+             {{ item.title}} x {{ item.qty }} : {{item.price * item.qty }}</v-card-text>
+          </v-card-item>
+             <v-card-text>{{ store.carts[store.currentCart].total }}</v-card-text>
         </v-card>
+        
       </v-col>
-      <v-col class=" col">
+      <v-col class="col">
         <v-sheet class="column-item d-flex justify-center align-center">
           <div class="w-100">
             <form action="">
