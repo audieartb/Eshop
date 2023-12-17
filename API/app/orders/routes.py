@@ -1,7 +1,7 @@
 from app.db import getSession
 from app.models import OrderCreate
 import app.orders.crud as crud
-import app.items.crud as ItemsCrud
+from app.items.crud import ItemCrud
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import JSONResponse
@@ -19,7 +19,7 @@ async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSes
 
         if not order.items:
             return Response(status_code=400)
-        out_of_stock = await ItemsCrud.check_item_stock(items=order.items, session=session)
+        out_of_stock = await ItemCrud.check_item_stock(items=order.items, session=session)
         if (out_of_stock):
             return JSONResponse(status_code=400, content=jsonable_encoder(out_of_stock))
         res = await crud.create_order(order=order, session=session)
@@ -28,6 +28,22 @@ async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSes
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
+
+@router.post("/orders/seed")
+async def seedOrders(orders: list[OrderCreate], session: AsyncSession = Depends(getSession)):
+    for order in orders:
+        try:
+
+            if not order.items:
+                return Response(status_code=400)
+            out_of_stock = await ItemCrud.check_item_stock(items=order.items, session=session)
+            if (out_of_stock):
+                return JSONResponse(status_code=400, content=jsonable_encoder(out_of_stock))
+            res = await crud.create_order(order=order, session=session)
+            send_order_confirmation(email=res.email, order_id=res.order_id)
+            return
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
 @router.post("/orders/history", status_code=200)
 async def mail_order(email: str, session: AsyncSession = Depends(getSession)):
