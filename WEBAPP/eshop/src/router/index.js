@@ -1,14 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
 import HomeView from '../views/HomeView.vue'
-import CartView from '../views/CartView.vue'
 import PaymentView from '../views/PaymentView.vue'
 import OrderCompletedView from '../views/OrderCompletedView.vue'
 import OrderHistoryView from '../views/OrderHistoryView.vue'
 import OrderConfirmation from '../views/OrderConfirmation.vue'
-import SalesMonth from '../views/admin/SalesMonth.vue'
+import DashboardView from '../views/admin/DashboardView.vue'
 import Login from '../views/admin/Login.vue'
 import Orders from '../views/admin/Orders.vue'
 import Products from '../views/admin/Products.vue'
+
+import OrderDetails from '../views/admin/OrderDetails.vue'
+import ImportView from '../views/admin/ImportView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,9 +48,9 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/admin/monthly',
+      path: '/admin/dashboard',
       name: 'monthly',
-      component: SalesMonth,
+      component: DashboardView,
     },
     {
       path: '/admin/products',
@@ -56,14 +59,26 @@ const router = createRouter({
     },
     {
       path: '/admin/orders',
-      name: 'orders',
+      name: 'admin-orders',
       component: Orders,
+  
     },
     {
       path: '/admin/login',
       name: 'login',
       component: Login,
-    }
+    },
+    {
+      path: '/admin/order/details',
+      name: 'order-details',
+      component: OrderDetails,
+    },
+    {
+      path: '/admin/import',
+      name: 'import',
+      component: ImportView,
+    },
+
   ]
 })
 

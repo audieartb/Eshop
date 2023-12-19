@@ -2,7 +2,6 @@ from datetime import date, datetime
 import string
 import random
 import json
-from ..db import getSession
 from ..models import Order, OrderCreate, OrderItem, ItemOrderLink, Item
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, join
