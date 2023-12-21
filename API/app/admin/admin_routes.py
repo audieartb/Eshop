@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel.ext.asyncio.session import AsyncSession
-import numpy as np
 import pandas as pd
 from .admin_crud import AdminItemCrud
 from app.db import PDENGINE
@@ -46,12 +45,6 @@ def get_dataframe(query: str = '', filename: str = ''):
         df.to_csv(path_or_buf=f'db_files/{filename}.csv')
         return df
 
-
-@router.post("/login")
-async def login():
-    pass
-
-
 @router.get("/order")
 async def get_orders():
     """All orders for Admin"""
@@ -94,7 +87,6 @@ async def get_order_daily():
     day_total = last_month.groupby(last_month['created_at'].dt.date)[
         'total'].count()
 
-
     print(day_total)
     return day_total.to_json()
 
@@ -121,7 +113,7 @@ async def get_top_amoun():
     return rank.to_json(orient="records")
 
 
-@router.get("/order/lastday")   
+@router.get("/order/lastday")
 async def get_daily_history():
     """Orders from the last 24 hrs"""
 
@@ -131,6 +123,7 @@ async def get_daily_history():
     last_day = df[df['created_at'] >= (
         pd.to_datetime('today')-pd.Timedelta(days=1))]
     return last_day.to_json(orient="records")
+
 
 @router.get("/order/{order_id}")
 async def get_order_details(order_id=str, session: AsyncSession = Depends(getSession)):

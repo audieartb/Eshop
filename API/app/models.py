@@ -8,6 +8,14 @@ import random
 def get_default_created_at():
     return datetime.now() - timedelta(weeks=random.randint(4, 30))
 
+class AdminUserBase(SQLModel):
+    username: str = Field(nullable=False, unique=True)
+    last_login: datetime = Field(nullable= True)
+
+class AdminUser(AdminUserBase, table=True):
+    id: int = Field(primary_key=True, nullable=False)
+    hashed_password: str = Field(nullable=False)
+
 ########### Item SQLModel ###########
 class ItemBase(SQLModel):
     """For Order Information on Emails"""

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .items import routes as ItemRoutes
 from .orders import routes as OrderRoutes
 from .admin import admin_routes as AdminRoutes
+from .admin import user_routes as UserRoutes
 from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.views import BaseModelView
 from .models import Item, Order, OrderDetail
@@ -33,6 +34,7 @@ app.add_middleware(
 app.include_router(ItemRoutes.router, prefix="/api")
 app.include_router(OrderRoutes.router, prefix="/api")
 app.include_router(AdminRoutes.router, prefix="/admin")
+app.include_router(UserRoutes.router, prefix="/admin" )
 
 @app.get("/")
 def read_root():
