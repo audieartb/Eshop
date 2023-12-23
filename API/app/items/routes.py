@@ -8,11 +8,12 @@ router = APIRouter()
 
 
 @router.get("/items", response_model=list[Item])
-async def get_items(skip: int = 0, limit: int = 15, price_from: int | None = None,
+async def get_items(skip: int = 0, limit: int | None = None, price_from: int | None = None,
                     price_to: int | None = None, search: str = '', session: AsyncSession = Depends(getSession)):
     """Handles all requests to search multiple items"""
     try:
-        result = await ItemCrud.get_items(limit=limit, skip=skip, price_from=price_from, price_to=price_to, search=search,   session=session)
+        print(skip, limit)
+        result = await ItemCrud.get_items(limit=limit, skip=skip, price_from=price_from, price_to=price_to, search=search, session=session)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

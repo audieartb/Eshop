@@ -21,7 +21,6 @@ async def read_user(current_user: Annotated[AdminUserBase, Depends(get_current_u
 @router.post("/user")
 async def create_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: AsyncSession = Depends(getSession)):
 
-    print(form_data.username, form_data.password)
     created  = await create_user_db(username=form_data.username, password=form_data.password, session=session)
     return created
    

@@ -23,7 +23,6 @@ class ItemBase(SQLModel):
     description: str
     price: float
     barcode: str = Field(nullable=False, unique=True)
-    in_stock: int
     image: str
 
 
@@ -38,8 +37,8 @@ class Item(ItemDetails, table=True):
     id: Optional[int] = Field(default=None, nullable=False, primary_key=True)
     item_order: Optional['ItemOrderLink'] = Relationship(
         back_populates='item_ref')
-    created_at: datetime = Field(default_factory=datetime.now())
-    updated_at: datetime
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
 
 class OrderItem(SQLModel):

@@ -2,13 +2,13 @@ from ..models import Item, ItemDetails, ItemBase, ItemOrderLink, OrderItem
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, or_
 from fastapi import HTTPException
-
-
+from datetime import datetime
+from sqlalchemy import func
 
 
 class ItemCrud:
-        
-    @classmethod    
+
+    @classmethod
     async def get_items(cls, limit: int, skip: int, price_from: int | None,
                         price_to: int | None, search: str, session: AsyncSession):
         """Handles all queries to multiple items"""
@@ -16,7 +16,6 @@ class ItemCrud:
         if search:
             statement = statement.filter(or_(
                 Item.item.regexp_match(search, 'i'), Item.description.regexp_match(search, 'i')))
-
         if price_from:
             statement = statement.where(Item.price > price_from)
         if price_to:
@@ -25,8 +24,15 @@ class ItemCrud:
         result = await session.execute(statement)
         items = result.scalars().all()
         return items
+    
+    @classmethod
+    async def item_count(cls, session: AsyncSession):
+        res = await session.exec(select(func.count(Item.id)))
+        return {"count": res.one()}
+        
 
-    @classmethod 
+
+    @classmethod
     async def item_by_id(cls, barcode: str, session: AsyncSession):
         """finds item by barcode"""
         result = await session.execute(select(Item).where(Item.barcode == barcode))
@@ -77,7 +83,32 @@ class ItemCrud:
             session.add(temp)
         await session.commit()
         return
-    
+
+    @classmethod
+    async def items_from_import(cls, items_list: list, session: AsyncSession):
+        try:
+            updated_at = datetime.now()
+            print(items_list)
+            for item in items_list:
+                result = await session.exec(select(Item).where(Item.barcode == item['barcode']))
+                db_item = result.one_or_none()
+                if not db_item:
+                    new_prod = Item(title=item["title"], description=item['description'],
+                                    price=item['price'], barcode=item["barcode"], image='',
+                                    in_stock=item['in_stock'], sold=0)
+
+                    session.add(new_prod)
+                    continue
+                db_item.in_stock += item['in_stock']
+                db_item.updated_at = updated_at
+                session.add(db_item)
+            await session.commit()
+            return
+        except Exception as e:
+            raise e
+        finally:
+            await session.close()
+
     @classmethod
     async def check_item_stock(cls, items: list[OrderItem], session: AsyncSession):
         """Retrives only items that have enough stock, Cancels all if one fails"""

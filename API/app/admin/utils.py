@@ -44,7 +44,6 @@ def create_access_token(data: dict):
 
 
 async def authenticate_user(username: str, password: str, session: AsyncSession):
-    print(username)
     result = await session.exec(select(AdminUser).where(AdminUser.username == username))
     user = result.one_or_none()
     if not user:
