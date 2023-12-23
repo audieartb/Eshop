@@ -1,13 +1,11 @@
-import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useAdminStore = defineStore('admin',  {
-
-  state:()=>{
-    return{
-      email:'',
+export const useAdminStore = defineStore('admin', {
+  state: () => {
+    return {
+      email: '',
       auth_token: '',
-      is_authenticated: true,
+      is_authenticated: false,
       orderDetails: {}
     }
   }

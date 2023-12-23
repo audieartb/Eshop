@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink , useRouter} from 'vue-router';
-
+import { useAdminStore } from '../../stores/admin';
+const adminStore = useAdminStore()
 const router = useRouter()
 const views = ref([
 {
@@ -36,7 +37,7 @@ function routerTo(url){
 
 </script>
 <template>
-  <div>
+  <div v-if="adminStore.is_authenticated">
     <v-navigation-drawer expand-on-hover rail permanent>
       <v-list-item title="Store" prepend-icon="mdi-home-analytics" subtitle="Admin Panel"></v-list-item>
       <v-divider></v-divider>
@@ -47,7 +48,7 @@ function routerTo(url){
         :prepend-icon="tab.icon"
         @click="routerTo(tab.link)"
       ></v-list-item>
-   
     </v-navigation-drawer>
+    {{ adminStore.is_authenticated }}
   </div>
 </template>

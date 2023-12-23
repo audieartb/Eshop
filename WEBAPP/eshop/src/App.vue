@@ -22,7 +22,7 @@ onMounted(async()=>{
       />
     </header>
    <MainBar></MainBar>
-   <div v-if="authStore.is_authenticated">
+   <div >
     <Navigation></Navigation>
    </div>
     <div class="main">

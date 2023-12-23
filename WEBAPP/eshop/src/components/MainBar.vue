@@ -4,10 +4,21 @@ import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { RouterLink, useRouter } from 'vue-router'
 import ManageCartDialog from './ManageCartDialog.vue'
+import { useAdminStore } from '../stores/admin'
+const adminStore = useAdminStore()
 const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)
+
+function logout(){
+  adminStore.email = ''
+  adminStore.auth_token = ''
+  adminStore.orderDetails = {}
+  adminStore.is_authenticated = false
+  router.push('/')
+}
+
 </script>
 
 <template>
@@ -15,6 +26,7 @@ const { currentCart } = storeToRefs(store)
     <v-app-bar>
       <div><router-link to="/"> <div class="text-h4 ml-5 store-title">What are you buying?</div></router-link></div>
       <template v-slot:append>
+        <v-btn v-if="adminStore.is_authenticated" @click="logout" >log out</v-btn>
         <v-tooltip text="Order History">
           <template v-slot:activator="{ props }">
             <v-btn v-bind="props" icon="mdi-receipt" @click="router.push('/order/history')">
