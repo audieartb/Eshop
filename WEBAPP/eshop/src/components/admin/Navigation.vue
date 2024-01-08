@@ -1,45 +1,56 @@
 <script setup>
 import { ref } from 'vue'
-import { RouterLink , useRouter} from 'vue-router';
-import { useAdminStore } from '../../stores/admin';
+import { RouterLink, useRouter } from 'vue-router'
+import { useAdminStore } from '../../stores/admin'
 const adminStore = useAdminStore()
 const router = useRouter()
 const views = ref([
-{
-        name: 'Orders',
-        id: 6,
-        icon: 'mdi-receipt',
-        link: '/admin/orders'
-    },
-    {
-        name: 'Products',
-        id: 7,
-        icon: 'mdi-drawing-box',
-        link: '/admin/products'
-    },
-    {
-        name: 'Dashboard',
-        id: 2,
-        icon: 'mdi-history',
-        link: '/admin/dashboard'
-    },
-    {
-        name: 'Import Products',
-        id: 4,
-        icon: 'mdi-database-import',
-        link: '/admin/import'
-    },
+  {
+    name: 'Dashboard',
+    id: 1,
+    icon: 'mdi-monitor-dashboard',
+    link: '/admin/dashboard'
+  },
+  {
+    name: 'Last 24Hrs.',
+    id:2,
+    icon: 'mdi-history',
+    link: '/admin/orders/recent'
+  },
+
+  {
+    name: 'Orders',
+    id: 3,
+    icon: 'mdi-receipt',
+    link: '/admin/orders'
+  },
+  {
+    name: 'Products',
+    id: 4,
+    icon: 'mdi-drawing-box',
+    link: '/admin/products'
+  },
+
+  {
+    name: 'Import Products',
+    id: 5,
+    icon: 'mdi-database-import',
+    link: '/admin/import'
+  }
 ])
 
-function routerTo(url){
-    router.push(url)
+function routerTo(url) {
+  router.push(url)
 }
-
 </script>
 <template>
   <div v-if="adminStore.is_authenticated">
     <v-navigation-drawer expand-on-hover rail permanent>
-      <v-list-item title="Store" prepend-icon="mdi-home-analytics" subtitle="Admin Panel"></v-list-item>
+      <v-list-item
+        title="Store"
+        prepend-icon="mdi-home-analytics"
+        subtitle="Admin Panel"
+      ></v-list-item>
       <v-divider></v-divider>
       <v-list-item
         v-for="tab in views"

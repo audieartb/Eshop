@@ -1,28 +1,11 @@
-,email,address,status,total,delivery_type,id,order_id,created_at,transaction_id
-0,audie.artavia19@gmail.com,street,pending,100.0,quick,1,$9$12-$EQG7TQB,2023-12-09 19:55:12.984547,xxx999xxx000-xxx000ddd
-1,audie.artavia19@gmail.com,"Poland, Gdansk, street, 00-000",pending,104.94,quick,2,$15$12-$1J3JW0I,2023-12-15 14:43:37.387886,xxx999xxx000-xxx000ddd
-2,audie.artavia19@gmail.com,"Poland, Gdansk, street, 00-000",pending,899.95,quick,3,$15$12-$T952GFB,2023-12-15 14:45:20.507286,xxx999xxx000-xxx000ddd
-3,audie.artavia19@gmail.com,"Poland, Gdansk, street, 00-000",pending,169.93,quick,4,$15$12-$VYX7LON,2023-12-15 14:45:39.207065,xxx999xxx000-xxx000ddd
-4,audie.artavia19@gmail.com,"Poland, Gdansk, street, 00-000",pending,299.89,quick,5,$15$12-$CR5JPMW,2023-12-15 14:46:04.666905,xxx999xxx000-xxx000ddd
-5,john.doe@example.com,"USA, New York, 5th Avenue, 10001",pending,127.92,slow,6,$15$12-$NHAS60P,2023-12-15 14:48:11.735224,xxx999xxx000-xxx000ddd
-6,jane.smith@example.com,"Canada, Toronto, Queen Street, M5C 1R6",pending,239.92,express,7,$15$12-$PRAO1DL,2023-12-15 14:48:26.544200,xxx999xxx000-xxx000ddd
-7,alex.jones@example.com,"Australia, Sydney, George Street, 2000",pending,429.86,standard,8,$15$12-$RTDNNB3,2023-12-15 14:48:38.383826,xxx999xxx000-xxx000ddd
-8,alice.jones@example.com,"UK, London, Oxford Street, W1A 1AB",pending,0.0,standard,9,$15$12-$0I4KZXD,2023-12-15 14:49:41.849870,xxx999xxx000-xxx000ddd
-9,bob.smith@example.com,"Germany, Berlin, Friedrichstrasse, 10117",pending,456.0,express,10,$15$12-$ON3AX1C,2023-12-15 14:50:17.261058,xxx999xxx000-xxx000ddd
-10,charlie.davis@example.com,"France, Paris, Champs-Élysées, 75008",pending,623.0,standard,11,$15$12-$WXOGKLZ,2023-12-15 14:50:31.952243,xxx999xxx000-xxx000ddd
-11,david.miller@example.com,"Spain, Madrid, Gran Vía, 28013",pending,0.0,standard,12,$15$12-$80FDOJ8,2023-12-15 14:59:34.443952,xxx999xxx000-xxx000ddd
-12,david.miller@example.com,"Spain, Madrid, Gran Vía, 28013",pending,0.0,standard,13,$15$12-$D5ZQVFD,2023-12-15 14:59:55.369856,xxx999xxx000-xxx000ddd
-13,frank.jenkins@example.com,"Netherlands, Amsterdam, Dam Square, 1012",pending,403.0,standard,14,$15$12-$M6N7WSK,2023-12-15 15:00:47.555254,xxx999xxx000-xxx000ddd
-14,grace.anderson@example.com,"Canada, Vancouver, Robson Street, V6B 5K3",pending,239.0,standard,15,$15$12-$PI8CDOE,2023-12-15 15:01:38.784486,xxx999xxx000-xxx000ddd
-15,henry.smith@example.com,"Germany, Munich, Marienplatz, 80331",pending,945.0,express,16,$15$12-$D00FDYY,2023-12-15 15:02:01.924344,xxx999xxx000-xxx000ddd
-16,isabel.jones@example.com,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,320.99,standard,17,$15$12-$IY7QKG9,2023-12-15 15:02:24.299023,xxx999xxx000-xxx000ddd
-17,isabel.jones@example.com,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,3240.99,standard,18,$15$12-$K6B7F5P,2023-12-15 15:12:20.891394,xxx999xxx000-xxx000ddd
-18,indiana.jones@example.com,"UK, London, Oxford Street, W1A 1AB",pending,349.0,standard,19,$15$12-$V8SSJMH,2023-11-25 16:34:58.969012,xxx999xxx000-xxx000ddd
-19,indiana.jones@example.com,"UK, London, Oxford Street, W1A 1AB",pending,349.0,standard,20,$15$12-$OKOPACC,2023-07-07 16:36:06.103004,xxx999xxx000-xxx000ddd
-20,indiana.jones@example.com,"UK, London, Oxford Street, W1A 1AB",pending,309.87,standard,21,$15$12-$SPY0OPF,2023-11-10 17:45:51.752619,xxx999xxx000-xxx000ddd
-21,indiana.jones@example.com,"UK, London, Oxford Street, W1A 1AB",pending,309.87,standard,22,$15$12-$1I25BP8,2023-09-22 17:50:15.400437,xxx999xxx000-xxx000ddd
-22,bob.sponge@example.com,"Germany, Berlin, Friedrichstrasse, 10117",pending,18.99,express,23,$15$12-$MMJZJIJ,2023-10-06 17:50:36.006846,xxx999xxx000-xxx000ddd
-23,charlie.davis@example.com,"France, Paris, Champs-Élysées, 75008",pending,74.3,standard,24,$15$12-$73HE1WW,2023-11-17 17:50:58.564118,xxx999xxx000-xxx000ddd
-24,isabel.kween@example.com,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,3120.99,standard,25,$15$12-$SWEKNWL,2023-09-08 17:51:13.237152,xxx999xxx000-xxx000ddd
-25,isabel.kween@example.com,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,310.99,standard,26,$15$12-$CZF20L9,2023-10-20 17:51:35.175796,xxx999xxx000-xxx000ddd
-26,henry.miller@example.com,"Germany, Munich, Marienplatz, 80331",pending,644.75,express,27,$15$12-$XT05UHU,2023-06-09 17:51:39.669764,xxx999xxx000-xxx000ddd
+,email,total
+0,isabel.jones@example.com,3240.99
+1,isabel.kween@example.com,3120.99
+2,henry.smith@example.com,945.0
+3,audie.artavia19@gmail.com,899.95
+4,henry.miller@example.com,644.75
+5,charlie.davis@example.com,623.0
+6,bob.smith@example.com,456.0
+7,audie.artavia19@gmail.com,449.93
+8,alex.jones@example.com,429.86
+9,frank.jenkins@example.com,403.0

@@ -6,7 +6,8 @@ export const useAdminStore = defineStore('admin', {
       email: '',
       auth_token: '',
       is_authenticated: false,
-      orderDetails: {}
+      orderDetails: {},
+      productDetails: {}
     }
   }
 })

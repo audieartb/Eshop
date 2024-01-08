@@ -10,7 +10,7 @@ async function setupData() {
   const jsondata = JSON.parse(res.data)
 
   for (const c in jsondata) {
-    orderData.value.push({ x: c, y: jsondata[c] })
+    orderData.value.push(jsondata[c])
   }
 }
 
@@ -30,10 +30,10 @@ onMounted(async () => {
       <tbody>
         <tr v-for="entry in orderData">
           <td>
-            {{ entry.x }}
+            {{ entry.email }}
           </td>
           <td>
-            {{ entry.y }}
+            {{ entry.total }}
           </td>
         </tr>
       </tbody>

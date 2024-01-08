@@ -12,6 +12,7 @@ import Products from '../views/admin/Products.vue'
 import OrderDetails from '../views/admin/OrderDetails.vue'
 import ImportView from '../views/admin/ImportView.vue'
 import ProductDetailsView from '../views/admin/ProductDetailsView.vue'
+import LastDayView from '../views/admin/LastDayView.vue'
 function isAdmin(to, from, next){
   const adminStore = useAdminStore()
   if(adminStore.is_authenticated && adminStore.auth_token){
@@ -93,8 +94,14 @@ const router = createRouter({
     },
     {
       path: '/admin/products/details',
-      name: 'import',
+      name: 'product-details',
       component: ProductDetailsView,
+      beforeEnter:[isAdmin]
+    },
+    {
+      path: '/admin/orders/recent',
+      name: 'order-recent',
+      component: LastDayView,
       beforeEnter:[isAdmin]
     },
 

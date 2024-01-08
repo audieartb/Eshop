@@ -15,7 +15,7 @@ class ItemCrud:
         statement = select(Item).offset(skip).limit(limit)
         if search:
             statement = statement.filter(or_(
-                Item.item.regexp_match(search, 'i'), Item.description.regexp_match(search, 'i')))
+                Item.title.regexp_match(search, 'i'), Item.description.regexp_match(search, 'i')))
         if price_from:
             statement = statement.where(Item.price > price_from)
         if price_to:

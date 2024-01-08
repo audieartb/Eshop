@@ -5,18 +5,18 @@ from starlette_admin.contrib.sqla import ModelView
 import random
 
 
-def get_default_created_at():
-    return datetime.now() - timedelta(weeks=random.randint(4, 30))
-
 class AdminUserBase(SQLModel):
     username: str = Field(nullable=False, unique=True)
-    last_login: datetime = Field(nullable= True)
+    last_login: datetime = Field(nullable=True)
+
 
 class AdminUser(AdminUserBase, table=True):
     id: int = Field(primary_key=True, nullable=False)
     hashed_password: str = Field(nullable=False)
 
 ########### Item SQLModel ###########
+
+
 class ItemBase(SQLModel):
     """For Order Information on Emails"""
     title: str
@@ -46,6 +46,7 @@ class OrderItem(SQLModel):
     barcode: str
     qty: int
     id: int
+    price: float
 
 ########### Orders SQLModel ###########
 
@@ -66,7 +67,7 @@ class Order(OrderBase, table=True):
     order_id: str = Field(nullable=False, unique=True)
     order_items: List["ItemOrderLink"] = Relationship(
         back_populates='order_ref', sa_relationship_kwargs={'lazy': 'selectin'})
-    created_at: datetime = Field(default_factory=get_default_created_at)
+    created_at: datetime = Field(default_factory=datetime.now)
     transaction_id: str = Field(default=None, nullable=False)
 
 
@@ -91,3 +92,14 @@ class ItemOrderLink(SQLModel, table=True):
     order_ref: Optional[Order] = Relationship(back_populates='order_items')
     item_ref: Optional[Item] = Relationship(
         back_populates='item_order', sa_relationship_kwargs={'lazy': 'selectin'})
+    
+
+class SearchFilters(SQLModel):
+    order_by: str = 'created_at'
+    order_asc: bool = False
+    skip: int = 0
+    limit: int | None
+    email:str | None
+    order_id: str | None
+    from_date: str
+    to_date: str

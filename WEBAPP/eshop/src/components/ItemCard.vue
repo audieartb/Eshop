@@ -16,6 +16,7 @@ function removeFromCart(item) {
   store.removeOneFromCart(item)
 }
 async function addToCart(item) {
+  console.log(item)
   await store.addToCart(item)
 }
 function inCart(barcode) {

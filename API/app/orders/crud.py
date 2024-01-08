@@ -18,7 +18,7 @@ async def create_order(order: OrderCreate, session: AsyncSession) -> str:
         order_id=order_id,
         transaction_id=transaction_id,
         status='pending',
-        total=order.total,
+        total= sum(item.price * item.qty for item in order.items),
         delivery_type=order.delivery_type
     )
     session.add(db_order)
@@ -30,7 +30,6 @@ async def create_order(order: OrderCreate, session: AsyncSession) -> str:
         session.add(temp)
     await session.commit()
     return db_order
-
 
 async def change_order_status(order_id: str, email: str, status: str, session: AsyncSession):
 

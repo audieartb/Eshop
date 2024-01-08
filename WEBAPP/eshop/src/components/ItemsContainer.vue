@@ -70,7 +70,7 @@ function searchItems(refresh) {
     tableItems.value = items.value.filter((item) =>
       lowerCaseValue.some(
         (word) =>
-          item.item.toLowerCase().includes(word) || item.description.toLowerCase().includes(word)
+          item.title.toLowerCase().includes(word) || item.description.toLowerCase().includes(word)
       )
     )
   }

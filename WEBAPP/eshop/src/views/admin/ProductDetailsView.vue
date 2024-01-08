@@ -3,7 +3,7 @@ import ProductDetailsCard from '../../components/admin/ProductDetailsCard.vue';
 
 </script>
 <template>
-    <ProductDetails>
+    <ProductDetailsCard>
         
-    </ProductDetails>
+    </ProductDetailsCard>
 </template>

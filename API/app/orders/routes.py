@@ -16,7 +16,6 @@ router = APIRouter()
 async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSession)):
     """Creates Order with status Pending"""
     try:
-
         if not order.items:
             return Response(status_code=400)
         out_of_stock = await ItemCrud.check_item_stock(items=order.items, session=session)

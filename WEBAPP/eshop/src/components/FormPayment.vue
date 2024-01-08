@@ -39,8 +39,14 @@ function clear() {
 
 function processItems() {
   let justItems = []
+
   for (const item in store.justItems) {
-    justItems.push({ barcode: store.justItems[item].barcode, qty: store.justItems[item].qty })
+    console.log(item)
+    justItems.push({ 
+      id: store.justItems[item].id, 
+      barcode: store.justItems[item].barcode, 
+      qty: store.justItems[item].qty,
+    price: store.justItems[item].price })
   }
   store.form_data.items = justItems
 }
@@ -49,7 +55,7 @@ async function processPayment() {
   alert(`payment successful`)
   form_data['total'] = store.carts[store.currentCart].total.toFixed(2)
   store.deleteCart(store.currentCart)
-  res = await postOrder(form_data.value)
+  const res = await postOrder(form_data.value)
   return router.push({ path: '/complete' })
 }
 

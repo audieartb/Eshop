@@ -54,14 +54,14 @@ export const useCartStore = defineStore('cart', {
       if (!this.currentCart) {
         await this.createCart()
       }
-
       if (!this.inCart(item.barcode)) {
         let newItem = {
+          id: item.id,
           barcode: item.barcode,
           qty: 1,
           price: item.price,
           img: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg',
-          title: item.item
+          title: item.title
         }
         this.carts[this.currentCart].items[item.barcode] = newItem
       } else {

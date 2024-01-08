@@ -1,25 +1,25 @@
 <script setup>
-import { ref , onMounted} from 'vue'
-import { useAdminStore } from '../../stores/admin';
+import { ref, onMounted } from 'vue'
+import { useAdminStore } from '../../stores/admin'
 const adminStore = useAdminStore()
 
-
 const order = adminStore.orderDetails
-
-
 </script>
 <template>
   <v-card>
     <v-card-item>
-      <v-card-title> Order Details </v-card-title>
-      <v-card-text> {{ order.email }} </v-card-text>
-      <v-card-text> {{ order.address }} </v-card-text>
-      <v-card-text> {{ order.status }} </v-card-text>
-      <v-card-text> {{ order.delivery_type }} </v-card-text>
-      <v-card-text> {{ order.created_at }} </v-card-text>
-      <v-card-text> {{ order.order_id }} </v-card-text>
+      <v-card-title>Order Details </v-card-title>
+      <v-row>
+        <v-card-item> Order Id: {{ order.order_id }} </v-card-item>
+        <v-card-item>Email: {{ order.email }} </v-card-item>
+        <v-card-item> Address: {{ order.address }} </v-card-item>
+        <v-card-item>Status: {{ order.status }} </v-card-item>
+        <v-card-item> Delivery Type: {{ order.delivery_type }} </v-card-item>
+        <v-card-item> Created on: {{ order.created_at }} </v-card-item>
+      </v-row>
     </v-card-item>
     <v-card-item>
+      <v-card-title>Order Items</v-card-title>
       <div v-for="item in order.items">
         <v-card-subtitle>{{ item.title }}</v-card-subtitle>
         <v-card-subtitle>{{ item.qty }}</v-card-subtitle>

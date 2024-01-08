@@ -11,13 +11,11 @@ const { currentCart } = storeToRefs(store)
 const { justItems } = storeToRefs(store)
 const cartRef = ref()
 
-async function addToCart(item) {
-  await store.addToCart(item)
-}
+
 
 
 function removeFromCart(item) {
-  if(carts[currentCart].items[item].qty == 1){
+  if(item.qty == 1){
     
   }
   store.removeOneFromCart(item)
@@ -27,7 +25,6 @@ function removeFromCart(item) {
 <template>
   <div v-if="carts[currentCart]" class="stepper-item" ref="cartRef">
     <div class="d-flex flex-column">
-      {{ cartPath }}
       <div class="d-flex align-start flex-column pt-5 v-col-sm-12 column-item">
         <v-card v-for="(item, idx) in carts[currentCart].items" width="400" class="mb-5 d-flex">
           <v-card-item class="align-content-start me-auto">
@@ -42,7 +39,7 @@ function removeFromCart(item) {
           <v-card-item class="d-flex flex-column" height="100%">
             <div class="alig-self-start">
               <v-btn
-                @click="addToCart(item)"
+                @click="store.addToCart(item)"
                 color="orange"
                 size="x-small"
                 variant="outlined"
@@ -80,7 +77,6 @@ function removeFromCart(item) {
         </div>
       </div>
     </div>
-
   <div class=" column-item mb-2 align-end">
     <v-row class="justify-end ma-1 d-flex column-item mb-2">
       <v-col class="v-col-md-4 v-col-sm-8 d-flex justify-end">
@@ -89,6 +85,7 @@ function removeFromCart(item) {
     </v-row>
   </div>
   </div>
+
 </template>
 <style scoped>
 .column-item {
