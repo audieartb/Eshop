@@ -26,16 +26,6 @@ export async function getOrderDetails(orderId){
     return await axios.get(ADMINURL+`/${orderId}`,{headers: HEADERS})
 }
 export async function getOrders(filters) {
-  // const filters = {
-  //   "skip": skip,
-  //   "limit": limit,
-  //   "order_by": order_by,
-  //   "order_asc": order_asc,
-  //   "email": '',
-  //   "order_id":'',
-  //   "from_date": '',
-  //   "to_date": ''
-  // }
   console.log(filters)
   return await axios.post(ADMINURL,filters, { headers: HEADERS })
 }
@@ -58,4 +48,12 @@ export async function getLastDay() {
 
 export async function getOrderCount(){
   return await axios.get(ADMINURL + '/count', { headers: HEADERS })
+}
+
+export async function getTopSellers(){
+  return await axios.get(ADMINURL + '/daily/popular', {headers: HEADERS})
+}
+
+export async function sendReport(email){
+  return await axios.post(ADMINURL+'/report/'+email, {headers: HEADERS})
 }

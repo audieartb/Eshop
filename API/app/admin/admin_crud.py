@@ -60,7 +60,7 @@ class AdminItemCrud:
         pass
 
     @classmethod
-    async def get_top_amoun(cls):
+    async def get_top_amount(cls):
         pass
 
     @classmethod

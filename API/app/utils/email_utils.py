@@ -1,8 +1,13 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 from .token_utils import token
+import pandas as pd
 import os
+import zipfile
+from datetime import datetime
 
 EMAIL_USER = os.environ.get('EMAIL_USER')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -59,3 +64,28 @@ def format_confirmation_email(url, email_to):
     body = MIMEText(html, 'html')
     msg.attach(body)
     return msg.as_string()
+
+def send_order_report(df: pd.DataFrame, email_to: str):
+   
+    
+    file_name = 'OrdersReport-'+datetime.now().strftime("%m%d%Y-%H%M%S")
+    compression_opts = dict(method='zip', archive_name = f'{file_name}.csv')
+    df.to_csv(f'{file_name}.zip', index=False,compression=compression_opts)
+    
+    msg = MIMEMultipart()
+    msg['Subject'] = f'Order Report for {datetime.now().strftime("%m%d%Y-%H%M%S")}'
+    msg['From'] = "audie.artavia19@gmail.com"
+    msg['To'] = email_to
+    attachment = MIMEBase('application', 'zip')
+    attachment.set_payload(open(f'{file_name}.zip', 'rb').read())
+    encoders.encode_base64(attachment)
+    attachment.add_header('Content-Disposition', 'attachment', filename=f'{file_name}.zip')
+    msg.attach(attachment)
+
+
+    with smtplib.SMTP_SSL(EMAIL_DOMAIN, EMAIL_PORT) as server:
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_USER, EMAIL_USER, msg.as_string())
+        
+
+    return None

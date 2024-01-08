@@ -3,7 +3,10 @@ from datetime import datetime, timedelta
 from sqlmodel import SQLModel, Field, Relationship
 from starlette_admin.contrib.sqla import ModelView
 import random
+from dateutil.relativedelta import relativedelta
 
+def test_date():
+    return datetime.now() - relativedelta(months=11)
 
 class AdminUserBase(SQLModel):
     username: str = Field(nullable=False, unique=True)

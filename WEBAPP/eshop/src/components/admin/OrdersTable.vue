@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import { getOrders, getOrderDetails, getOrderCount } from '../../services/orders'
+import { getOrders, getOrderDetails, getOrderCount, sendReport } from '../../services/orders'
 import { useAdminStore } from '../../stores/admin'
 import router from '../../router'
 const adminStore = useAdminStore()
-//const orders = ref({})
+const adminEmail = ref('')
+const dialog = ref(false)
 
 const limit = ref(5)
 const skip = ref(0)
@@ -75,8 +76,7 @@ async function goToDetails(order) {
   router.push({ name: 'order-details' })
 }
 
-
-async function searchFilter(){
+async function searchFilter() {
   filters.value.limit = null
   filters.value.skip = 0
   const res = await getOrders(filters.value)
@@ -84,11 +84,20 @@ async function searchFilter(){
   showPagination.value = false
 }
 
-function clearSearch(){
+function clearSearch() {
   currentPage.value = 1
   showPagination.value = true
   filters.value.email = null
   filters.value.order_id = null
+}
+
+const updateDialog = () => dialog.value = !dialog.value
+
+async function requestReport(){
+  const res =await sendReport(adminEmail.value)
+  if(res.status == 200){
+    alert('Email has been sent')
+  }
 }
 onMounted(() => {
   getOrdersCount()
@@ -100,12 +109,28 @@ onMounted(() => {
     <div>
       <div>Filters</div>
       <div class="d-flex flex-wrap w-75 align-center">
-        <v-text-field variant="outlined" label="Email" v-model="filters.email" class="ma-2"></v-text-field>
+        <v-text-field
+          variant="outlined"
+          label="Email"
+          v-model="filters.email"
+          class="ma-2"
+        ></v-text-field>
 
-        <v-text-field variant="outlined" label="Order Id" v-model="filters.order_id" class="ma-2"
-          ></v-text-field>
-          <v-btn color="orange" class="filter-btn" @click="searchFilter">Search</v-btn>
-          <v-btn color="orange" class=" filter-btn" @click="clearSearch">Clear</v-btn>
+        <v-text-field
+          variant="outlined"
+          label="Order Id"
+          v-model="filters.order_id"
+          class="ma-2"
+        ></v-text-field>
+        <v-btn color="orange" class="filter-btn" @click="searchFilter">Search</v-btn>
+        <v-btn color="orange" class="filter-btn" @click="clearSearch">Clear</v-btn>
+        <div>
+          <v-tooltip text="Send Order Report by Email">
+            <template v-slot:activator="{ props }">
+              <v-btn v-bind="props" icon="mdi-export" @click.stop="updateDialog"> </v-btn>
+            </template>
+          </v-tooltip>
+        </div>
       </div>
     </div>
     <v-table>
@@ -147,10 +172,28 @@ onMounted(() => {
     </div>
     <div class="d-flex justify-center"></div>
   </div>
+  <v-dialog width="700" v-model="dialog">
+    <v-card>
+        <v-card-title>
+          Enter your email address to receive the report
+        </v-card-title>
+        <v-card-item>
+          <v-text-field
+          variant="outlined"
+          label="Email"
+          v-model="adminEmail"
+          class="ma-2"
+        ></v-text-field>
+        </v-card-item>
+        <v-card-item class="mb-2">
+          <v-btn color="green" class="mx-2" @click="requestReport">Send Report</v-btn>
+          <v-btn color="red" @click="updateDialog">Close</v-btn>
+        </v-card-item>
+    </v-card>
+  </v-dialog>
 </template>
 <style scoped>
-
-.filter-btn{
+.filter-btn {
   margin: 1rem;
   width: 7rem;
 }

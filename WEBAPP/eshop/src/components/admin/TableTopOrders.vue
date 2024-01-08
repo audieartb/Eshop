@@ -16,9 +16,12 @@ async function setupData() {
 }
 
 async function goToDetails(order) {
+  console.log(order)
   if (order) {
     let items = await getOrderDetails(order.order_id)
     order.items = items.data
+    console.log(items)
+    console.log(order)
     adminStore.orderDetails = order
     router.push({ name: 'order-details'})
   }
@@ -30,7 +33,7 @@ onMounted(async () => {
 </script>
 <template>
   <div>
-    <v-table density="compact">
+    <v-table density="compact" :hover="true">
       <thead>
         <tr>
           <th>Order Id</th>
@@ -54,3 +57,8 @@ onMounted(async () => {
     </v-table>
   </div>
 </template>
+<style scoped>
+td{
+  cursor: pointer;
+}
+</style>

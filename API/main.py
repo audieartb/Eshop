@@ -1,13 +1,14 @@
 from fastapi import FastAPI
+import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from .items import routes as ItemRoutes
-from .orders import routes as OrderRoutes
-from .admin import admin_routes as AdminRoutes
-from .admin import user_routes as UserRoutes
+from app.items import routes as ItemRoutes
+from app.orders import routes as OrderRoutes
+from app.admin import admin_routes as AdminRoutes
+from app.admin import user_routes as UserRoutes
 from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.views import BaseModelView
-from .models import Item, Order, OrderDetail
-from .db import engine
+from app.models import Item, Order, OrderDetail
+from app.db import engine
 
 
 
@@ -39,3 +40,6 @@ app.include_router(UserRoutes.router, prefix="/admin" )
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

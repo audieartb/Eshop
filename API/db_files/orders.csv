@@ -1,11 +1,2 @@
-,email,total
-0,isabel.jones@example.com,3240.99
-1,isabel.kween@example.com,3120.99
-2,henry.smith@example.com,945.0
-3,audie.artavia19@gmail.com,899.95
-4,henry.miller@example.com,644.75
-5,charlie.davis@example.com,623.0
-6,bob.smith@example.com,456.0
-7,audie.artavia19@gmail.com,449.93
-8,alex.jones@example.com,429.86
-9,frank.jenkins@example.com,403.0
+,email,address,status,total,delivery_type,id,order_id,created_at,transaction_id
+0,audie.artavia19@gmail.com,address,pending,9.95,fast,32,$8$1-$7D9U1US,2024-01-08 17:40:55.010065,xxx999xxx000-xxx000ddd

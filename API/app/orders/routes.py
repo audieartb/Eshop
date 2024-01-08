@@ -12,7 +12,7 @@ from ..utils.token_utils import verify_token
 router = APIRouter()
 
 
-@router.post("/orders")
+@router.post("/orders", status_code=200)
 async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSession)):
     """Creates Order with status Pending"""
     try:
@@ -23,7 +23,7 @@ async def place_order(order: OrderCreate, session: AsyncSession = Depends(getSes
             return JSONResponse(status_code=400, content=jsonable_encoder(out_of_stock))
         res = await crud.create_order(order=order, session=session)
         send_order_confirmation(email=res.email, order_id=res.order_id)
-        return
+        return 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 

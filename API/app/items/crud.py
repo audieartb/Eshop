@@ -124,6 +124,7 @@ class ItemCrud:
 
                 db_item.in_stock -= item.qty
                 db_item.sold += item.qty
+                db_item.updated_at = datetime.now()
                 session.add(db_item)
 
             if (out_of_stock):

@@ -20,7 +20,7 @@ onMounted(async () => {
 </script>
 <template>
   <div>
-    <v-table density="compact">
+    <v-table density="compact" :hover="true">
       <thead>
         <tr>
           <th>Email</th>
@@ -40,3 +40,8 @@ onMounted(async () => {
     </v-table>
   </div>
 </template>
+<style scoped>
+td{
+  cursor: pointer;
+}
+</style>

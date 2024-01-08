@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, APIRouter, UploadFile, File, Form, UploadFile
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing import Annotated
+from dateutil.relativedelta import relativedelta
 import pandas as pd
 from .admin_crud import AdminItemCrud
 from app.db import PDENGINE
@@ -9,8 +9,7 @@ import os
 from datetime import datetime, timedelta
 from app.models import ItemBase, ItemDetails, SearchFilters
 from app.items.crud import ItemCrud
-from dataclasses import dataclass
-import time
+from ..utils.email_utils import send_order_report
 
 router = APIRouter()
 
@@ -61,17 +60,16 @@ async def order_count(session: AsyncSession = Depends(getSession)):
     return await AdminItemCrud.get_order_count(session=session)
 
 
-
 @router.post("/order")
 async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(getSession)):
     all_orders = await AdminItemCrud.get_orders(order_by=filters.order_by,
                                                 order_asc=filters.order_asc,
                                                 skip=filters.skip,
                                                 limit=filters.limit,
-                                                email = filters.email,
-                                                order_id = filters.order_id,
-                                                from_date = filters.from_date,
-                                                to_date = filters.to_date,
+                                                email=filters.email,
+                                                order_id=filters.order_id,
+                                                from_date=filters.from_date,
+                                                to_date=filters.to_date,
                                                 session=session)
     """All orders for Admin"""
     return all_orders
@@ -80,11 +78,12 @@ async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(get
 @router.get("/order/monthlysales")
 async def get_order_monthly():
     """Total Sales by Month"""
-    query = 'select created_at, total from order_data'
+    limit = datetime.now() - relativedelta(months=12)
+    query = f"select created_at, total from order_data where created_at > '{limit}'"
     df = get_dataframe(query=query)
     df.index = pd.to_datetime(df['created_at'])
     month_total = df.groupby(pd.Grouper(freq='M'))['total'].count()
-    month_total.index = month_total.index.strftime('%B')
+    month_total.index = month_total.index.strftime('%B-%Y')
 
     return month_total.to_json()
 
@@ -115,7 +114,7 @@ async def get_top_customers():
 @router.get("/order/top_orders")
 async def get_top_amount():
     """Top 10 highest orders"""
-    query = 'select email, total from order_data order by total DESC limit 10'
+    query = 'select order_id, email, total, address, status, delivery_type, created_at from order_data order by total DESC limit 10'
     df = get_dataframe(query=query)
     return df.to_json(orient="records")
 
@@ -124,7 +123,7 @@ async def get_top_amount():
 async def get_daily_history():
     """Orders from the last 24 hrs"""
     limit = datetime.now() - timedelta(days=1)
-    
+
     query = f"select * from order_data where created_at > '{limit}'"
     df = get_dataframe(query=query)
 
@@ -158,3 +157,29 @@ async def upload_file(file: UploadFile, session: AsyncSession = Depends(getSessi
         await ItemCrud.items_from_import(items, session)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.get("/order/daily/popular")
+async def daily_popular():
+
+    try:
+
+        limit = datetime.now() - timedelta(hours=24)
+        query = "select title, in_stock from item where in_stock < 20 order by in_stock limit 10"
+        df = get_dataframe(query=query)
+        return df.to_dict(orient='records')
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail='Error generating report. '+str(e)) from e
+
+
+@router.post("/order/report/{email_to}")
+async def send_report(email_to: str):
+    try:
+        query = "select * from order_data limit 5"
+        df = get_dataframe(query=query)
+        send_order_report(df=df, email_to=email_to)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail='Error generating report. '+str(e)) from e
