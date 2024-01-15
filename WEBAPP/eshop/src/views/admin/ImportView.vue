@@ -20,8 +20,21 @@ async function submitFile() {
 </script>
 
 <template>
+ <div class="d-flex">
+ <div class="w-50">
+  <div class="mb-5">
+    <h2>Select a .csv file to upload</h2>
+  </div>
   <div>
     <v-file-input label="File input" ref="files" variant="outlined"></v-file-input>
-    <v-btn @click="submitFile"> Submit </v-btn>
+   <div class="d-flex justify-end">
+    <v-btn color="orange" @click="submitFile"> Submit </v-btn>
+   </div>
   </div>
+ </div>
+ </div>
 </template>
+
+<style scoped>
+
+</style>

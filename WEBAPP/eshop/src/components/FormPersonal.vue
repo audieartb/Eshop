@@ -1,12 +1,11 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, numeric, helpers } from '@vuelidate/validators'
 
-const router = useRouter()
 const store = useCartStore()
 const { carts } = storeToRefs(store)
 const { currentCart } = storeToRefs(store)

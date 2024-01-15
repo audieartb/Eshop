@@ -40,27 +40,6 @@ class ItemCrud:
         return item
 
     @classmethod
-    async def add_item(cls, item: Item, session: AsyncSession):
-        """adds single item to database"""
-        db_item = Item.from_orm(item)
-        session.add(db_item)
-        await session.commit()
-        await session.refresh(db_item)
-        return db_item
-
-    @classmethod
-    async def update_item(cls, item: Item, session: AsyncSession):
-        res = session.exec(select(Item).where(Item.id == item.id))
-        db_item = res.one()
-        if (not db_item):
-            raise HTTPException(
-                status_code=404, detail="Item does not exist in database")
-        db_item = item
-        session.add(db_item)
-        session.commit()
-        return db_item
-
-    @classmethod
     async def update_item_sold(cls, item_id: int, sold: int, session: AsyncSession):
         """for every sold item updates the stock"""
         statement = select(Item).where(Item.id == item_id)
@@ -71,8 +50,8 @@ class ItemCrud:
         item.in_stock -= sold
         item.sold += sold
         session.add(item)
-        session.commit()
-        session.refresh(item)
+        await session.commit()
+        await session.refresh(item)
         return item
 
     @classmethod

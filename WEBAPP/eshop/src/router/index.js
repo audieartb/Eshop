@@ -93,10 +93,11 @@ const router = createRouter({
       beforeEnter:[isAdmin]
     },
     {
-      path: '/admin/products/details',
+      path: '/admin/products/details/:mode',
       name: 'product-details',
       component: ProductDetailsView,
-      beforeEnter:[isAdmin]
+      beforeEnter:[isAdmin],
+      props: true
     },
     {
       path: '/admin/orders/recent',

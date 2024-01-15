@@ -3,7 +3,8 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from app.items import routes as ItemRoutes
 from app.orders import routes as OrderRoutes
-from app.admin import admin_routes as AdminRoutes
+from app.admin import order_routes as AdminOrderRoutes
+from app.admin import item_routes as AdminItemRoutes
 from app.admin import user_routes as UserRoutes
 from starlette_admin.contrib.sqla import Admin, ModelView
 from starlette_admin.views import BaseModelView
@@ -34,7 +35,8 @@ app.add_middleware(
 )
 app.include_router(ItemRoutes.router, prefix="/api")
 app.include_router(OrderRoutes.router, prefix="/api")
-app.include_router(AdminRoutes.router, prefix="/admin")
+app.include_router(AdminOrderRoutes.router, prefix="/admin")
+app.include_router(AdminItemRoutes.router, prefix="/admin")
 app.include_router(UserRoutes.router, prefix="/admin" )
 
 @app.get("/")

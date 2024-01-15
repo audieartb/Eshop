@@ -19,7 +19,7 @@ const tableColums = [
   },
   {
     key: 'updated_at',
-    name: 'Updated On'
+    name: 'Updated At'
   },
   {
     key: 'price',
@@ -28,6 +28,10 @@ const tableColums = [
   {
     key: 'in_stock',
     name: 'Stock'
+  },
+  {
+    key: 'sold',
+    name: 'Sold'
   }
 ]
 

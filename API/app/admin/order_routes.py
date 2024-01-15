@@ -7,7 +7,7 @@ from app.db import PDENGINE
 from app.db import getSession
 import os
 from datetime import datetime, timedelta
-from app.models import ItemBase, ItemDetails, SearchFilters
+from app.models import ItemBase, ItemDetails, SearchFilters, Item
 from app.items.crud import ItemCrud
 from ..utils.email_utils import send_order_report
 
@@ -27,7 +27,6 @@ def check_file_exists(filename: str):
 
 
 def get_dataframe(query: str = None, filename: str = ''):
-
     query_all = 'select * from order_data'
     filename = "orders"
 
@@ -50,19 +49,19 @@ def get_dataframe(query: str = None, filename: str = ''):
         return df
 
 
-@router.get("/item/count")
-async def item_count(session: AsyncSession = Depends(getSession)):
-    return await ItemCrud.item_count(session=session)
+
 
 
 @router.get("/order/count")
 async def order_count(session: AsyncSession = Depends(getSession)):
+    """Returns Total Count of Orders to calculate total pages"""
     return await AdminItemCrud.get_order_count(session=session)
 
 
 @router.post("/order")
 async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(getSession)):
-    all_orders = await AdminItemCrud.get_orders(order_by=filters.order_by,
+    """Gets orders for Admin and applies filters and pagination"""
+    return await AdminItemCrud.get_orders(order_by=filters.order_by,
                                                 order_asc=filters.order_asc,
                                                 skip=filters.skip,
                                                 limit=filters.limit,
@@ -71,10 +70,7 @@ async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(get
                                                 from_date=filters.from_date,
                                                 to_date=filters.to_date,
                                                 session=session)
-    """All orders for Admin"""
-    return all_orders
-
-
+    
 @router.get("/order/monthlysales")
 async def get_order_monthly():
     """Total Sales by Month"""
@@ -90,7 +86,7 @@ async def get_order_monthly():
 
 @router.get("/order/dailysales")
 async def get_order_daily():
-    """Daily total orders last 30 days"""
+    """Daily total orders in the last 30 days"""
     query = 'select created_at, order_id, total from order_data'
     df = get_dataframe(query=query)
     df['created_at'] = pd.to_datetime(df['created_at'])
@@ -113,7 +109,7 @@ async def get_top_customers():
 
 @router.get("/order/top_orders")
 async def get_top_amount():
-    """Top 10 highest orders"""
+    """Top 10 highest amount orders"""
     query = 'select order_id, email, total, address, status, delivery_type, created_at from order_data order by total DESC limit 10'
     df = get_dataframe(query=query)
     return df.to_json(orient="records")
@@ -135,7 +131,7 @@ async def get_daily_history():
 
 @router.get("/order/{order_id}")
 async def get_order_details(order_id=str, session: AsyncSession = Depends(getSession)):
-    """queries order by id"""
+    """queries order by id and returns details"""
     try:
         items = await AdminItemCrud.get_order_by_id(id=order_id, session=session)
         return items
@@ -143,28 +139,10 @@ async def get_order_details(order_id=str, session: AsyncSession = Depends(getSes
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.post("/upload")
-async def upload_file(file: UploadFile, session: AsyncSession = Depends(getSession)):
-    """will read a csv and write to database new or existing items"""
-    try:
-        df = pd.read_csv(file.file)
-        df.fillna('', inplace=True)
-        df['price'] = df['price'].astype(float)
-        df['in_stock'] = df['in_stock'].astype(int)
-        df['barcode'] = df['barcode'].astype(str)
-        items = df.to_dict(orient="records")
-
-        await ItemCrud.items_from_import(items, session)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
-
-
 @router.get("/order/daily/popular")
-async def daily_popular():
-
+async def low_stock():
+    """Returns items with low stock"""
     try:
-
-        limit = datetime.now() - timedelta(hours=24)
         query = "select title, in_stock from item where in_stock < 20 order by in_stock limit 10"
         df = get_dataframe(query=query)
         return df.to_dict(orient='records')
@@ -175,6 +153,7 @@ async def daily_popular():
 
 @router.post("/order/report/{email_to}")
 async def send_report(email_to: str):
+    """Generates all orders report for admin and sends via email"""
     try:
         query = "select * from order_data limit 5"
         df = get_dataframe(query=query)

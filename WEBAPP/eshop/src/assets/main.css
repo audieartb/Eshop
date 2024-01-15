@@ -29,6 +29,12 @@ a{
 .admin-data-container{
  
 }
+
+.centered-column{
+  text-align: center;
+}
+
+
 /*
 a,
 .green {

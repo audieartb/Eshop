@@ -57,7 +57,12 @@ async function setupData() {
 function goToDetails(item){
 
   adminStore.productDetails = item
-  router.push("/admin/products/details")
+  router.push("/admin/products/details/edit")
+}
+
+function createProduct(){
+  adminStore.productDetails = null
+  router.push("/admin/products/details/new")
 }
 
 onMounted(() => {
@@ -67,6 +72,7 @@ onMounted(() => {
 </script>
 <template>
   <div class="ml-4">
+    <v-btn @click="createProduct">New</v-btn>
     <v-table fixed-header>
       <thead>
         <tr>

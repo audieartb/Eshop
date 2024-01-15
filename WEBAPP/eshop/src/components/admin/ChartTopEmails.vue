@@ -32,7 +32,7 @@ onMounted(async () => {
           <td>
             {{ entry.email }}
           </td>
-          <td>
+          <td class="centered-column">
             {{ entry.total }}
           </td>
         </tr>

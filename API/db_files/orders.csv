@@ -1,2 +1,11 @@
-,email,address,status,total,delivery_type,id,order_id,created_at,transaction_id
-0,audie.artavia19@gmail.com,address,pending,9.95,fast,32,$8$1-$7D9U1US,2024-01-08 17:40:55.010065,xxx999xxx000-xxx000ddd
+,order_id,email,total,address,status,delivery_type,created_at
+0,$15$12-$K6B7F5P,isabel.jones@example.com,3240.99,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,standard,2023-12-15 15:12:20.891394
+1,$15$12-$SWEKNWL,isabel.kween@example.com,3120.99,"USA, Los Angeles, Hollywood Boulevard, 90028",pending,standard,2023-09-08 17:51:13.237152
+2,$15$12-$D00FDYY,henry.smith@example.com,945.0,"Germany, Munich, Marienplatz, 80331",pending,express,2023-12-15 15:02:01.924344
+3,$15$12-$T952GFB,audie.artavia19@gmail.com,899.95,"Poland, Gdansk, street, 00-000",pending,quick,2023-12-15 14:45:20.507286
+4,$15$12-$XT05UHU,henry.miller@example.com,644.75,"Germany, Munich, Marienplatz, 80331",pending,express,2023-06-09 17:51:39.669764
+5,$15$12-$WXOGKLZ,charlie.davis@example.com,623.0,"France, Paris, Champs-Élysées, 75008",pending,standard,2023-12-15 14:50:31.952243
+6,$15$12-$ON3AX1C,bob.smith@example.com,456.0,"Germany, Berlin, Friedrichstrasse, 10117",pending,express,2023-12-15 14:50:17.261058
+7,$4$1-$0ZF0PXE,audie.artavia19@gmail.com,449.93,"poland, warsaw, walowa, 80989",pending,super slow,2024-01-04 16:50:59.400721
+8,$15$12-$RTDNNB3,alex.jones@example.com,429.86,"Australia, Sydney, George Street, 2000",pending,standard,2023-12-15 14:48:38.383826
+9,$15$12-$M6N7WSK,frank.jenkins@example.com,403.0,"Netherlands, Amsterdam, Dam Square, 1012",pending,standard,2023-12-15 15:00:47.555254

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASEURL = 'http://localhost:8000/api/items'
-const ADMINURL = 'http://localhost:8000/admin/item/count'
+const ADMINURL = 'http://localhost:8000/admin/item/'
 
 const HEADERS = {'accept': 'application/json'}
 
@@ -26,5 +26,17 @@ export async function itemsPagination(skip,limit){
 }
 
 export async function getCount(){
-    return  axios.get(ADMINURL, {headers: HEADERS})
+    return  axios.get(ADMINURL+'count', {headers: HEADERS})
+}
+
+export async function updateProduct(product){
+    return axios.put(ADMINURL, product, {headers: HEADERS})
+}
+
+export async function deleteProduct(barcode){
+    return axios.delete(ADMINURL+`${barcode}`, {headers: HEADERS})
+}
+
+export async function createProduct(product){
+    return axios.post(ADMINURL, product, {headers: HEADERS})
 }

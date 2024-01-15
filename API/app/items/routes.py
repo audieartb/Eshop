@@ -31,15 +31,6 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
         raise HTTPException(status_code=500) from e
 
 
-@router.post("/items", status_code=201)
-async def add_item(item: Item, session: AsyncSession = Depends(getSession)):
-    """adds one item"""
-    try:
-        result = await ItemCrud.add_item(item=item, session=session)
-        return {"result": result}
-    except Exception as e:
-        raise HTTPException(status_code=500) from e
-
 
 @router.put("/items", status_code=204)
 async def update_item(item: Item, session: AsyncSession = Depends(getSession)):

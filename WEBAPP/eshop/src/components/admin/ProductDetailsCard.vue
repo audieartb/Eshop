@@ -1,12 +1,181 @@
 <script setup>
-import { useAdminStore } from '../../stores/admin';
+import { ref, computed, reactive, defineProps, onMounted } from 'vue'
+import { useAdminStore } from '../../stores/admin'
+import { updateProduct, deleteProduct, createProduct } from '../../services/items'
+import { useRouter } from 'vue-router'
+
+const props = defineProps(['mode'])
 const adminStore = useAdminStore()
+const router = useRouter()
+const storeItem = reactive({ ...adminStore.productDetails })
+const item = reactive({ ...storeItem })
 
-const item = adminStore.productDetails
+const readonly = ref(true)
+const changes = computed(() => {
+  return Object.keys(item).some((field) => item[field] != storeItem[field])
+})
 
+const dateString = (date) => {
+  var update = new Date(date)
+  return `${update.toDateString()} at ${update.toLocaleTimeString()}`
+}
+
+async function save() {
+  if (props.mode == 'new') {
+    item.image = ''
+    const res = await createProduct(item)
+    if (res.status == 201) {
+      console.log('created product')
+      adminStore.productDetails = res.data
+      readonly.value = true
+      Object.assign(storeItem, adminStore.productDetails)
+      Object.assign(item, storeItem)
+    }
+    return
+  }
+
+  const res = await updateProduct(item)
+  if (res.status == 200) {
+    console.log('ok')
+    adminStore.productDetails = res.data
+    readonly.value = true
+    Object.assign(storeItem, adminStore.productDetails)
+    Object.assign(item, storeItem)
+  }
+}
+
+const edit = () => {
+  readonly.value = !readonly.value
+  if (readonly.value) {
+    console.log('think')
+    Object.assign(item, storeItem)
+  }
+}
+
+async function deleteProductBarcode(barcode) {
+  if (!barcode) {
+    alert('There is not an item to delete')
+    return
+  }
+  let text = 'The selected Item will be deleted'
+  if (!confirm(text)) {
+    return
+  }
+  const res = await deleteProduct(barcode)
+  if (res.status == 204) {
+    alert('product has been removed')
+    adminStore.productDetails = null
+    router.push('/admin/products')
+  }
+}
+
+onMounted(() => {
+  if (props.mode == 'new') {
+    readonly.value = false
+  }
+})
 </script>
 <template>
-    <v-card>
-        {{ item }}
+  <div>
+    <v-card class="w-50">
+      <div class="d-flex justify-space-between">
+        <div>
+          <v-card-title>{{ item.title }}</v-card-title>
+          <v-card-subtitle> last updated: {{ dateString(item.updated_at) }}</v-card-subtitle>
+          <v-card-text>{{ item.description }}</v-card-text>
+        </div>
+        <div class="pa-5">
+          <v-btn
+            class="ma-1"
+            @click="edit"
+            :icon="!readonly ? 'mdi-close' : 'mdi-file-edit'"
+            :color="!readonly ? 'red' : 'blue'"
+          ></v-btn>
+          <v-btn
+            class="ma-1"
+            @click="save"
+            :disabled="!changes"
+            icon="mdi-content-save"
+            color="green"
+          ></v-btn>
+          <v-btn
+            class="ma-1"
+            @click="deleteProductBarcode(item.barcode)"
+            icon="mdi-trash-can"
+            color="red"
+          ></v-btn>
+        </div>
+      </div>
+      <v-card-item>
+        <v-row>
+          <v-col>Barcode</v-col>
+          <v-col
+            ><v-text-field
+              variant="outlined"
+              :readonly="props.mode == 'new' ? false : true"
+              v-model="item.barcode"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Title</v-col>
+          <v-col
+            ><v-text-field
+              variant="outlined"
+              :readonly="readonly"
+              v-model="item.title"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Description</v-col>
+          <v-col
+            ><v-textarea
+              variant="outlined"
+              :readonly="readonly"
+              v-model="item.description"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+            ></v-textarea
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Price</v-col>
+          <v-col
+            ><v-text-field
+              variant="outlined"
+              :readonly="readonly"
+              v-model="item.price"
+              type="number"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>Sold</v-col>
+          <v-col
+            ><v-text-field
+              variant="outlined"
+              :readonly="readonly"
+              v-model="item.sold"
+              type="number"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col>In Stock</v-col>
+          <v-col
+            ><v-text-field
+              variant="outlined"
+              :readonly="readonly"
+              v-model="item.in_stock"
+              type="number"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+            ></v-text-field
+          ></v-col>
+        </v-row>
+      </v-card-item>
     </v-card>
+  </div>
 </template>

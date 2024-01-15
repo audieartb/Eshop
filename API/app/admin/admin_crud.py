@@ -3,6 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, or_, and_, desc
 from fastapi import HTTPException
 from sqlalchemy import func
+from datetime import datetime
 
 
 class AdminItemCrud:
@@ -47,17 +48,46 @@ class AdminItemCrud:
             return items
 
     @classmethod
-    async def get_monthly_sales(cls,  session: AsyncSession):
+    async def update_item(cls, item: Item, session: AsyncSession):
+        res = await session.exec(select(Item).where(Item.id == item.id))
+        db_item = res.one()
+        if (not db_item):
+            raise HTTPException(
+                status_code=404, detail="Item does not exist in database")
 
-        pass
+        db_item.updated_at = datetime.now()
+        db_item.sold = item.sold
+        db_item.description = item.description
+        db_item.title = item.title
+        db_item.in_stock = item.in_stock
+        db_item.price = item.price
+        session.add(db_item)
+        await session.commit()
+        await session.refresh(db_item)
+
+        return db_item
+    
 
     @classmethod
-    async def get_order_daily(cls):
-        pass
+    async def delete_item(cls, barcode: str, session: AsyncSession):
+        res = await session.exec(select(Item).where(Item.barcode == barcode))
+        db_item = res.first()
+        if( not db_item):
+            raise HTTPException(
+                status_code=404, detail="Item does not exist in database"
+            )
+        session.delete(db_item)
+        await session.commit()
+        return
 
     @classmethod
-    async def get_top_order(cls):
-        pass
+    async def create_item(cls, item : Item, session: AsyncSession):
+        """adds single item to database"""
+        db_item = Item.from_orm(item)
+        session.add(db_item)
+        await session.commit()
+        await session.refresh(db_item)
+        return db_item
 
     @classmethod
     async def get_top_amount(cls):

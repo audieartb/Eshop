@@ -35,9 +35,11 @@ onMounted(async () => {
   <div>
     <v-table density="compact" :hover="true">
       <thead>
-        <tr>
+        <tr >
           <th>Order Id</th>
-          <th>Total Amount</th>
+          <th>
+            Total Amount
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -47,7 +49,7 @@ onMounted(async () => {
               {{ entry.email }}
             </div>
           </td>
-          <td>
+          <td class="centered-column">
             <div @click="goToDetails(entry)">
               {{ entry.total }}
             </div>
@@ -62,3 +64,4 @@ td{
   cursor: pointer;
 }
 </style>
+

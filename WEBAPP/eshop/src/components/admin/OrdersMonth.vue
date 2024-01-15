@@ -28,7 +28,7 @@ function chartConstructor(chartType, chartOptions) {
       labels: labels.value,
       datasets: [
         {
-          label: 'Montlhy Sales',
+          label: 'Montlhy Orders',
           data: dataValues.value,
           backgroundColor: 'rgba(252, 144, 3, 0.7)',
           borderColor: '#5cddff',
@@ -36,6 +36,9 @@ function chartConstructor(chartType, chartOptions) {
           pointBackgroundColor: '#5cddff'
         }
       ]
+    },
+    options:{
+      aspectRatio: 3
     }
   })
 }

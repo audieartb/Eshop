@@ -22,12 +22,12 @@ export async function orderHistory(email) {
   return await axios.post(BASEURL + '/history?email=' + email, { headers: HEADERS })
 }
 
-export async function getOrderDetails(orderId){
-    return await axios.get(ADMINURL+`/${orderId}`,{headers: HEADERS})
+export async function getOrderDetails(orderId) {
+  return await axios.get(ADMINURL + `/${orderId}`, { headers: HEADERS })
 }
 export async function getOrders(filters) {
   console.log(filters)
-  return await axios.post(ADMINURL,filters, { headers: HEADERS })
+  return await axios.post(ADMINURL, filters, { headers: HEADERS })
 }
 
 export async function getMonthlySales() {
@@ -46,14 +46,14 @@ export async function getLastDay() {
   return await axios.get(ADMINURL + '/lastday', { headers: HEADERS })
 }
 
-export async function getOrderCount(){
+export async function getOrderCount() {
   return await axios.get(ADMINURL + '/count', { headers: HEADERS })
 }
 
-export async function getTopSellers(){
-  return await axios.get(ADMINURL + '/daily/popular', {headers: HEADERS})
+export async function getTopSellers() {
+  return await axios.get(ADMINURL + '/daily/popular', { headers: HEADERS })
 }
 
-export async function sendReport(email){
-  return await axios.post(ADMINURL+'/report/'+email, {headers: HEADERS})
+export async function sendReport(email) {
+  return await axios.post(ADMINURL + '/report/' + email, { headers: HEADERS })
 }
