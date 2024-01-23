@@ -13,19 +13,19 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin/token")
 router = APIRouter()
 
 
-@router.get("/user/")
+@router.get("/user/", tags=['Admin Account'])
 async def read_user(current_user: Annotated[AdminUserBase, Depends(get_current_user)],):
     return current_user
 
 
-@router.post("/user")
+@router.post("/user", tags=['Admin Account'])
 async def create_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: AsyncSession = Depends(getSession)):
 
     created  = await create_user_db(username=form_data.username, password=form_data.password, session=session)
     return created
    
 
-@router.post("/token")
+@router.post("/token", tags=['Admin Account'])
 async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: AsyncSession = Depends(getSession)):
     user = await authenticate_user(username=form_data.username,
                                    password=form_data.password,

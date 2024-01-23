@@ -1,9 +1,8 @@
 <script setup>
 import { ref, onMounted, computed, watch, defineEmits, defineProps } from 'vue'
 import { getCount, itemsPagination } from '../../services/items'
-import {useAdminStore} from '../../stores/admin'
-import router from '../../router';
-import { all } from 'axios';
+import { useAdminStore } from '../../stores/admin'
+import router from '../../router'
 const emit = defineEmits(['getData'])
 const props = defineProps(['columns'])
 
@@ -17,7 +16,6 @@ const dataCount = ref(null)
 const currentPage = ref()
 
 const pages = computed(() => {
-  console.log('computed', dataCount.value)
   return Math.ceil(dataCount.value / limit.value)
 })
 
@@ -44,25 +42,21 @@ async function getdataCount() {
   }
 }
 
-
-
 async function setupData() {
   const data = await itemsPagination(skip.value, limit.value)
   tableData.value = data
   allData.value = data
   skip.value = tableData.value.length
-  console.log(allData.value)
 }
 
-function goToDetails(item){
-
+function goToDetails(item) {
   adminStore.productDetails = item
-  router.push("/admin/products/details/edit")
+  router.push('/admin/products/details/edit')
 }
 
-function createProduct(){
+function createProduct() {
   adminStore.productDetails = null
-  router.push("/admin/products/details/new")
+  router.push('/admin/products/details/new')
 }
 
 onMounted(() => {
@@ -72,19 +66,24 @@ onMounted(() => {
 </script>
 <template>
   <div class="ml-4">
-    <v-btn @click="createProduct">New</v-btn>
+    <v-btn @click="createProduct" color="orange" class="ma-3">Add New Product</v-btn>
     <v-table fixed-header>
       <thead>
         <tr>
           <th class="text-left" v-for="col in props.columns">{{ col.name }}</th>
-          <th class="text-left">Actions</th>
+          <th class="text-left">Manage</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in tableData" :key="item.id">
           <td v-for="col in props.columns">{{ item[col.key] }}</td>
           <td>
-            <v-btn density="compact" @click="goToDetails(item)" class="mr-1" icon="mdi-eye"></v-btn>
+            <v-btn
+              density="compact"
+              @click="goToDetails(item)"
+              class="mr-1"
+              icon="mdi-circle-edit-outline"
+            ></v-btn>
           </td>
         </tr>
       </tbody>

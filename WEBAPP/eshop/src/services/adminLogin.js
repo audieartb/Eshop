@@ -18,7 +18,6 @@ export async function login(form_data) {
       if (res.status != 200) {
         throw Error('Login Error')
       }
-      console.log(res.data)
       return res.data
     })
     .catch((err) => {

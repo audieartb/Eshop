@@ -14,6 +14,7 @@ const orders = ref([])
 const productCount = ref(null)
 const currentPage = ref()
 const showPagination = ref(true)
+const fileType = ref('')
 const filters = ref({
   email: null,
   order_id: null,
@@ -91,13 +92,15 @@ function clearSearch() {
   filters.value.order_id = null
 }
 
-const updateDialog = () => dialog.value = !dialog.value
+const updateDialog = () => (dialog.value = !dialog.value)
 
-async function requestReport(){
-  const res =await sendReport(adminEmail.value)
-  if(res.status == 200){
+async function requestReport() {
+  const res = await sendReport(adminEmail.value, fileType.value)
+  if (res.status == 200) {
     alert('Email has been sent')
   }
+
+  updateDialog()
 }
 onMounted(() => {
   getOrdersCount()
@@ -174,21 +177,23 @@ onMounted(() => {
   </div>
   <v-dialog width="700" v-model="dialog">
     <v-card>
-        <v-card-title>
-          Enter your email address to receive the report
-        </v-card-title>
-        <v-card-item>
-          <v-text-field
+      <v-card-title> Enter your email address to receive the report </v-card-title>
+      <v-card-item>
+        <v-text-field
           variant="outlined"
           label="Email"
           v-model="adminEmail"
           class="ma-2"
         ></v-text-field>
-        </v-card-item>
-        <v-card-item class="mb-2">
-          <v-btn color="green" class="mx-2" @click="requestReport">Send Report</v-btn>
-          <v-btn color="red" @click="updateDialog">Close</v-btn>
-        </v-card-item>
+      </v-card-item>
+      <v-radio-group class="ml-5" v-model="fileType" inline>
+        <v-radio label=".json" value="json" ></v-radio>
+        <v-radio label=".csv" value="csv" ></v-radio>
+      </v-radio-group>
+      <v-card-item class="mb-2">
+        <v-btn color="green" class="mx-2" @click="requestReport">Send Report</v-btn>
+        <v-btn color="red" @click="updateDialog">Close</v-btn>
+      </v-card-item>
     </v-card>
   </v-dialog>
 </template>

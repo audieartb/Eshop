@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { login } from '../../services/adminLogin'
 import { useAdminStore } from '../../stores/admin'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 const adminStore = useAdminStore()
 const router = useRouter()
 const username = ref('')
@@ -21,7 +21,7 @@ async function sendLogin() {
       router.push('dashboard')
     })
     .catch((err) => {
-      console.log(err)
+      alert('error loggin in ')
     })
 }
 </script>

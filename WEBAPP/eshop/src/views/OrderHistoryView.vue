@@ -63,10 +63,14 @@ async function submit() {
       <v-divider class="mb-4"></v-divider>
 
       <div class="text-end">
+        <v-btn v-if="!success" class="text-none mr-3" color="orange"  variant="flat">
+          <router-link to="/">Back to Store </router-link></v-btn
+        >
         <v-btn v-if="!success" color="orange" variant="flat" :disabled="waiting" @click="submit">Submit</v-btn>
         <v-btn v-else class="text-none" color="orange"  variant="flat">
           <router-link to="/">Back to Store </router-link></v-btn
         >
+        
       </div>
     </v-sheet>
   </div>

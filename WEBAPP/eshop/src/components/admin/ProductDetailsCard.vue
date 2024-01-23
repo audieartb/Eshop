@@ -1,16 +1,29 @@
 <script setup>
-import { ref, computed, reactive, defineProps, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useAdminStore } from '../../stores/admin'
 import { updateProduct, deleteProduct, createProduct } from '../../services/items'
 import { useRouter } from 'vue-router'
+import { useVuelidate } from '@vuelidate/core'
+import {  required, numeric } from '@vuelidate/validators'
 
 const props = defineProps(['mode'])
 const adminStore = useAdminStore()
 const router = useRouter()
-const storeItem = reactive({ ...adminStore.productDetails })
-const item = reactive({ ...storeItem })
+const storeItem = reactive({...adminStore.productDetails })
+const item = reactive({...storeItem })
 
 const readonly = ref(true)
+
+const rules = {
+  title: { required},
+  description: { required},
+  price: { required, numeric},
+  in_stock: { required, numeric},
+  barcode: { required, numeric},
+  sold: {numeric}
+}
+
+const v$ = useVuelidate(rules, item)
 const changes = computed(() => {
   return Object.keys(item).some((field) => item[field] != storeItem[field])
 })
@@ -20,12 +33,16 @@ const dateString = (date) => {
   return `${update.toDateString()} at ${update.toLocaleTimeString()}`
 }
 
+
+
 async function save() {
+  const result = await v$.value.$validate()
+  if(!result) return
+
   if (props.mode == 'new') {
     item.image = ''
     const res = await createProduct(item)
     if (res.status == 201) {
-      console.log('created product')
       adminStore.productDetails = res.data
       readonly.value = true
       Object.assign(storeItem, adminStore.productDetails)
@@ -36,7 +53,7 @@ async function save() {
 
   const res = await updateProduct(item)
   if (res.status == 200) {
-    console.log('ok')
+
     adminStore.productDetails = res.data
     readonly.value = true
     Object.assign(storeItem, adminStore.productDetails)
@@ -47,7 +64,6 @@ async function save() {
 const edit = () => {
   readonly.value = !readonly.value
   if (readonly.value) {
-    console.log('think')
     Object.assign(item, storeItem)
   }
 }
@@ -81,7 +97,9 @@ onMounted(() => {
       <div class="d-flex justify-space-between">
         <div>
           <v-card-title>{{ item.title }}</v-card-title>
-          <v-card-subtitle> last updated: {{ dateString(item.updated_at) }}</v-card-subtitle>
+          <v-card-subtitle v-if="item.updated_at">
+            last updated: {{ dateString(item.updated_at) }}</v-card-subtitle
+          >
           <v-card-text>{{ item.description }}</v-card-text>
         </div>
         <div class="pa-5">
@@ -114,6 +132,9 @@ onMounted(() => {
               variant="outlined"
               :readonly="props.mode == 'new' ? false : true"
               v-model="item.barcode"
+              required
+              :error-messages="v$.barcode.$errors.map((e) => e.$message)"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''"
             ></v-text-field
           ></v-col>
         </v-row>
@@ -124,7 +145,9 @@ onMounted(() => {
               variant="outlined"
               :readonly="readonly"
               v-model="item.title"
-              :append-icon="!readonly ? 'mdi-file-edit' : ''"
+              :append-icon="!readonly ? 'mdi-file-edit' : ''" 
+              required
+              :error-messages="v$.title.$errors.map((e) => e.$message)"
             ></v-text-field
           ></v-col>
         </v-row>
@@ -136,6 +159,8 @@ onMounted(() => {
               :readonly="readonly"
               v-model="item.description"
               :append-icon="!readonly ? 'mdi-file-edit' : ''"
+              required
+              :error-messages="v$.description.$errors.map((e) => e.$message)"
             ></v-textarea
           ></v-col>
         </v-row>
@@ -146,8 +171,9 @@ onMounted(() => {
               variant="outlined"
               :readonly="readonly"
               v-model="item.price"
-              type="number"
               :append-icon="!readonly ? 'mdi-file-edit' : ''"
+              required
+              :error-messages="v$.price.$errors.map((e) => e.$message)"
             ></v-text-field
           ></v-col>
         </v-row>
@@ -158,7 +184,6 @@ onMounted(() => {
               variant="outlined"
               :readonly="readonly"
               v-model="item.sold"
-              type="number"
               :append-icon="!readonly ? 'mdi-file-edit' : ''"
             ></v-text-field
           ></v-col>
@@ -172,6 +197,8 @@ onMounted(() => {
               v-model="item.in_stock"
               type="number"
               :append-icon="!readonly ? 'mdi-file-edit' : ''"
+              required
+              :error-messages="v$.in_stock.$errors.map((e) => e.$message)"
             ></v-text-field
           ></v-col>
         </v-row>

@@ -43,7 +43,7 @@ def format_email(items_list, email_to):
     msg['To'] = email_to
     rows = ''
     for i in items_list:
-        rows += f'<tr><td>{i.order_id}</td><td>{i.item}</td><td>{i.price}</td><td>{i.qty}</td></tr>'
+        rows += f'<tr><td>{i.order_id}</td><td>{i.title}</td><td>{i.price}</td><td>{i.qty}</td></tr>'
 
     table = f'<table><thead><tr><th colspan="1">Order Id</th><th colspan="1">Item</th><th colspan="1">Price</th><th colspan="1">Qty</th></tr></thead><tbody>{rows}</tbody></table>'
 
@@ -65,17 +65,21 @@ def format_confirmation_email(url, email_to):
     msg.attach(body)
     return msg.as_string()
 
-def send_order_report(df: pd.DataFrame, email_to: str):
+def send_order_report(df: pd.DataFrame, file_type : str, email: str):
    
     
     file_name = 'OrdersReport-'+datetime.now().strftime("%m%d%Y-%H%M%S")
-    compression_opts = dict(method='zip', archive_name = f'{file_name}.csv')
-    df.to_csv(f'{file_name}.zip', index=False,compression=compression_opts)
+
+    compression_opts = dict(method='zip', archive_name = f'{file_name}.{file_type}')
+    if(file_type == 'json'):
+        df.to_json(f'{file_name}.zip', index=False,compression=compression_opts, orient="records")
+    else:
+        df.to_csv(f'{file_name}.zip', index=False,compression=compression_opts)
     
     msg = MIMEMultipart()
     msg['Subject'] = f'Order Report for {datetime.now().strftime("%m%d%Y-%H%M%S")}'
     msg['From'] = "audie.artavia19@gmail.com"
-    msg['To'] = email_to
+    msg['To'] = email
     attachment = MIMEBase('application', 'zip')
     attachment.set_payload(open(f'{file_name}.zip', 'rb').read())
     encoders.encode_base64(attachment)
@@ -87,5 +91,4 @@ def send_order_report(df: pd.DataFrame, email_to: str):
         server.login(EMAIL_USER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_USER, EMAIL_USER, msg.as_string())
         
-
     return None

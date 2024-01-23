@@ -39,20 +39,20 @@ class ItemCrud:
         item = result.first()
         return item
 
-    @classmethod
-    async def update_item_sold(cls, item_id: int, sold: int, session: AsyncSession):
-        """for every sold item updates the stock"""
-        statement = select(Item).where(Item.id == item_id)
-        result = session.exe(statement)
-        item = result.first()
-        if (item is None):
-            raise ValueError("Item does not exists")
-        item.in_stock -= sold
-        item.sold += sold
-        session.add(item)
-        await session.commit()
-        await session.refresh(item)
-        return item
+    # @classmethod
+    # async def update_item_sold(cls, item_id: int, sold: int, session: AsyncSession):
+    #     """for every sold item updates the stock"""
+    #     statement = select(Item).where(Item.id == item_id)
+    #     result = session.exe(statement)
+    #     item = result.first()
+    #     if (item is None):
+    #         raise ValueError("Item does not exists")
+    #     item.in_stock -= sold
+    #     item.sold += sold
+    #     session.add(item)
+    #     await session.commit()
+    #     await session.refresh(item)
+    #     return item
 
     @classmethod
     async def create_items(cls, items: list[ItemDetails], session: AsyncSession):
@@ -89,7 +89,7 @@ class ItemCrud:
             await session.close()
 
     @classmethod
-    async def check_item_stock(cls, items: list[OrderItem], session: AsyncSession):
+    async def update_sold_items(cls, items: list[OrderItem], session: AsyncSession):
         """Retrives only items that have enough stock, Cancels all if one fails"""
         out_of_stock = []
         try:
@@ -113,4 +113,23 @@ class ItemCrud:
 
         except Exception as e:
             await session.rollback()
+            raise e
+
+    @classmethod
+    async def check_item_stock(cls, items: list[OrderItem], session: AsyncSession):
+        out_of_stock = []
+        try:
+            for item in items:
+                result = await session.exec(select(Item).where(Item.barcode == item.barcode).where(Item.in_stock > item.qty))
+                db_item = result.first()
+
+                if db_item is None:
+                    out_of_stock.append(item)
+                    continue
+
+            if (out_of_stock):
+                return out_of_stock
+            return None
+
+        except Exception as e:
             raise e

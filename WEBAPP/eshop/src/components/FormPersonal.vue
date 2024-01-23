@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 
 import { useCartStore } from '@/stores/cart'
 import { storeToRefs } from 'pinia'

@@ -41,12 +41,15 @@ function processItems() {
   let justItems = []
 
   for (const item in store.justItems) {
-    console.log(item)
-    justItems.push({ 
-      id: store.justItems[item].id, 
-      barcode: store.justItems[item].barcode, 
+    justItems.push({
+      id: store.justItems[item].id,
+      barcode: store.justItems[item].barcode,
       qty: store.justItems[item].qty,
-    price: store.justItems[item].price })
+      price: store.justItems[item].price,
+      created_at: '2024-01-23T11:23:33.737Z',
+      temp_id: ''
+
+    })
   }
   store.form_data.items = justItems
 }
@@ -70,20 +73,19 @@ onMounted(() => {
       <v-col class="col-6">
         <v-card>
           <v-card-title>Summary</v-card-title>
-          
-         <v-card-item>
 
-          <v-card-text>email: {{ form_data.email }}</v-card-text>
-          <v-card-text>Address: {{ form_data.address }}</v-card-text>
-          <v-card-text>Delivery type: {{ form_data.delivery_type }}</v-card-text>
-         </v-card-item>
           <v-card-item>
-            <v-card-text v-for="item in store.carts[store.currentCart].items ">
-             {{ item.title}} x {{ item.qty }} : {{item.price * item.qty }}</v-card-text>
+            <v-card-text>email: {{ form_data.email }}</v-card-text>
+            <v-card-text>Address: {{ form_data.address }}</v-card-text>
+            <v-card-text>Delivery type: {{ form_data.delivery_type }}</v-card-text>
           </v-card-item>
-             <v-card-text>{{ store.carts[store.currentCart].total }}</v-card-text>
+          <v-card-item>
+            <v-card-text v-for="item in store.carts[store.currentCart].items">
+              {{ item.title }} x {{ item.qty }} : {{ item.price * item.qty }}</v-card-text
+            >
+          </v-card-item>
+          <v-card-text>{{ store.carts[store.currentCart].total }}</v-card-text>
         </v-card>
-        
       </v-col>
       <v-col class="col">
         <v-sheet class="column-item d-flex justify-center align-center">

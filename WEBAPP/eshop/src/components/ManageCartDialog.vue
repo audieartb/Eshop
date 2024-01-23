@@ -73,7 +73,7 @@ function showSnackbar(customText, color) {
 
 <template>
   <div>
-    <v-btn @click.stop="open">Carts</v-btn>
+    <v-btn @click.stop="open" class="menu-btn">Carts</v-btn>
     <v-dialog width="700" v-model="dialog">
       <v-card class="mb-3 px-2">
         <div class="d-flex justify-center my-2">

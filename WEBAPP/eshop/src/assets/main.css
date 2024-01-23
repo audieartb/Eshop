@@ -9,7 +9,6 @@
 }
 
 .main{
-
   padding-top: 5rem;
 }
 
@@ -34,7 +33,19 @@ a{
   text-align: center;
 }
 
+.dashboard-title{
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  font-size: 2rem;
+  font-weight: 500;
+  background-color: orange;
+  height: 3rem;
+}
 
+.menu-btn{
+  width: 100%;
+  border-radius: 0%;
+}
 /*
 a,
 .green {

@@ -82,6 +82,8 @@ class OrderDetail(ModelView):
 class OrderCreate(OrderBase):
     """Order creation must include at least 1 item"""
     items: List[OrderItem]
+    temp_id : str
+    created_at : datetime
 
 
 ########### OrderXItem SQLModel ###########

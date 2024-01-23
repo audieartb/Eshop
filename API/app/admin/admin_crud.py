@@ -88,11 +88,3 @@ class AdminItemCrud:
         await session.commit()
         await session.refresh(db_item)
         return db_item
-
-    @classmethod
-    async def get_top_amount(cls):
-        pass
-
-    @classmethod
-    async def get_daily_history(cls):
-        pass

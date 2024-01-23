@@ -7,7 +7,7 @@ from .crud import ItemCrud
 router = APIRouter()
 
 
-@router.get("/items", response_model=list[Item])
+@router.get("/items", response_model=list[Item], tags=['Items Client'])
 async def get_items(skip: int = 0, limit: int | None = None, price_from: int | None = None,
                     price_to: int | None = None, search: str = '', session: AsyncSession = Depends(getSession)):
     """Handles all requests to search multiple items"""
@@ -19,7 +19,7 @@ async def get_items(skip: int = 0, limit: int | None = None, price_from: int | N
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/items/{item_id}")
+@router.get("/items/{item_id}", tags=['Items Client'])
 async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
     """item by id receives the barcode"""
     try:
@@ -32,17 +32,17 @@ async def item_by_id(item_id=str, session: AsyncSession = Depends(getSession)):
 
 
 
-@router.put("/items", status_code=204)
-async def update_item(item: Item, session: AsyncSession = Depends(getSession)):
-    """updates one item"""
-    try:
-        await ItemCrud.update_item_sold(item_id=item.id, sold=item.sold, session=session)
-        return
-    except Exception as e:
-        raise HTTPException(status_code=500) from e
+# @router.put("/items", status_code=204, tags=['Items Client'])
+# async def update_item(item: Item, session: AsyncSession = Depends(getSession)):
+#     """updates one item"""
+#     try:
+#         await ItemCrud.update_item_sold(item_id=item.id, sold=item.sold, session=session)
+#         return
+#     except Exception as e:
+#         raise HTTPException(status_code=500) from e
 
 
-@router.post("/itemsbulk", status_code=200)
+@router.post("/itemsbulk", status_code=200, tags=['Items Client'])
 async def add_bulk(items: list[ItemDetails], session: AsyncSession = Depends(getSession)):
     try:
         result = await ItemCrud.create_items(items=items, session=session)

@@ -1,24 +1,20 @@
-from fastapi import Depends, HTTPException, APIRouter, UploadFile, File, Form, UploadFile
+from fastapi import Depends, HTTPException, APIRouter, UploadFile, UploadFile
 from sqlmodel.ext.asyncio.session import AsyncSession
-from dateutil.relativedelta import relativedelta
 import pandas as pd
 from .admin_crud import AdminItemCrud
 from app.db import PDENGINE
 from app.db import getSession
-import os
-from datetime import datetime, timedelta
-from app.models import ItemBase, ItemDetails, SearchFilters, Item
+from app.models import ItemDetails, Item
 from app.items.crud import ItemCrud
-from ..utils.email_utils import send_order_report
 
 router = APIRouter()
 
-@router.get("/item/count")
+@router.get("/item/count", tags=['Items Admin'])
 async def item_count(session: AsyncSession = Depends(getSession)):
     """Returns total item count to calculate total pages"""
     return await ItemCrud.item_count(session=session)
 
-@router.post("/upload")
+@router.post("/upload", tags=['Items Admin'])
 async def upload_file(file: UploadFile, session: AsyncSession = Depends(getSession)):
     """will read a csv/json and write to database new or existing items"""
     try:
@@ -35,7 +31,7 @@ async def upload_file(file: UploadFile, session: AsyncSession = Depends(getSessi
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     
-@router.put("/item")
+@router.put("/item", tags=['Items Admin'])
 async def update_item(item: Item, session: AsyncSession = Depends(getSession)):
     """updates one item"""
     try:
@@ -44,7 +40,7 @@ async def update_item(item: Item, session: AsyncSession = Depends(getSession)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     
-@router.delete("/item/{barcode}", status_code=204)
+@router.delete("/item/{barcode}", status_code=204, tags=['Items Admin'])
 async def delete_item(barcode:str, session: AsyncSession = Depends(getSession)):
     try:
         await AdminItemCrud.delete_item(barcode=barcode, session=session)
@@ -52,7 +48,7 @@ async def delete_item(barcode:str, session: AsyncSession = Depends(getSession)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     
-@router.post("/item", status_code=201)
+@router.post("/item", status_code=201, tags=['Items Admin'])
 async def add_item(item: ItemDetails, session: AsyncSession = Depends(getSession)):
     """adds one item"""
     try:

@@ -1,18 +1,17 @@
-from fastapi import Depends, HTTPException, APIRouter, UploadFile, File, Form, UploadFile
+from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel.ext.asyncio.session import AsyncSession
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 from .admin_crud import AdminItemCrud
 from app.db import PDENGINE
-from app.db import getSession
+from app.db import getSession, cache
 import os
 from datetime import datetime, timedelta
-from app.models import ItemBase, ItemDetails, SearchFilters, Item
-from app.items.crud import ItemCrud
+from app.models import SearchFilters
 from ..utils.email_utils import send_order_report
+import pickle
 
 router = APIRouter()
-
 
 def check_file_exists(filename: str):
     if not os.path.exists('db_files'):
@@ -37,28 +36,21 @@ def get_dataframe(query: str = None, filename: str = ''):
 
     ctime = os.path.getctime(f'db_files/{filename}.csv')
     ctimestamp = datetime.fromtimestamp(ctime)
-    # if ((ctimestamp + timedelta(seconds=1)) > datetime.now()):
-    if ((ctimestamp) > datetime.now()):
+    if ((ctimestamp + timedelta(days=4)) > datetime.now()):
         df = pd.read_csv(f'db_files/{filename}.csv')
-
         return df
     else:
-
         df = pd.read_sql(query, con=PDENGINE)
         df.to_csv(path_or_buf=f'db_files/{filename}.csv')
         return df
 
-
-
-
-
-@router.get("/order/count")
+@router.get("/order/count", tags=['Orders Admin'])
 async def order_count(session: AsyncSession = Depends(getSession)):
     """Returns Total Count of Orders to calculate total pages"""
     return await AdminItemCrud.get_order_count(session=session)
 
 
-@router.post("/order")
+@router.post("/order", tags=['Orders Admin'])
 async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(getSession)):
     """Gets orders for Admin and applies filters and pagination"""
     return await AdminItemCrud.get_orders(order_by=filters.order_by,
@@ -71,11 +63,11 @@ async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(get
                                                 to_date=filters.to_date,
                                                 session=session)
     
-@router.get("/order/monthlysales")
+@router.get("/order/monthlysales", tags=['Orders Admin'])
 async def get_order_monthly():
     """Total Sales by Month"""
-    limit = datetime.now() - relativedelta(months=12)
-    query = f"select created_at, total from order_data where created_at > '{limit}'"
+    date_limit = datetime.now() - relativedelta(months=12)
+    query = f"select created_at, total from order_data where created_at > '{date_limit}'"
     df = get_dataframe(query=query)
     df.index = pd.to_datetime(df['created_at'])
     month_total = df.groupby(pd.Grouper(freq='M'))['total'].count()
@@ -84,7 +76,7 @@ async def get_order_monthly():
     return month_total.to_json()
 
 
-@router.get("/order/dailysales")
+@router.get("/order/dailysales", tags=['Orders Admin'])
 async def get_order_daily():
     """Daily total orders in the last 30 days"""
     query = 'select created_at, order_id, total from order_data'
@@ -99,7 +91,7 @@ async def get_order_daily():
     return day_total.to_json()
 
 
-@router.get("/order/top_customers")
+@router.get("/order/top_customers", tags=['Orders Admin'])
 async def get_top_customers():
     """Top 10 Customers"""
     query = "select email, count(total) as total from order_data group by email order by total DESC limit 10"
@@ -107,7 +99,7 @@ async def get_top_customers():
     return df.to_json(orient="records")
 
 
-@router.get("/order/top_orders")
+@router.get("/order/top_orders", tags=['Orders Admin'])
 async def get_top_amount():
     """Top 10 highest amount orders"""
     query = 'select order_id, email, total, address, status, delivery_type, created_at from order_data order by total DESC limit 10'
@@ -115,7 +107,7 @@ async def get_top_amount():
     return df.to_json(orient="records")
 
 
-@router.get("/order/lastday")
+@router.get("/order/lastday", tags=['Orders Admin'])
 async def get_daily_history():
     """Orders from the last 24 hrs"""
     limit = datetime.now() - timedelta(days=1)
@@ -129,17 +121,18 @@ async def get_daily_history():
     return last_day.to_json(orient="records")
 
 
-@router.get("/order/{order_id}")
+@router.get("/order/{order_id}", tags=['Orders Admin'])
 async def get_order_details(order_id=str, session: AsyncSession = Depends(getSession)):
     """queries order by id and returns details"""
     try:
+        
         items = await AdminItemCrud.get_order_by_id(id=order_id, session=session)
         return items
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.get("/order/daily/popular")
+@router.get("/order/daily/popular", tags=['Orders Admin'])
 async def low_stock():
     """Returns items with low stock"""
     try:
@@ -151,13 +144,13 @@ async def low_stock():
             status_code=500, detail='Error generating report. '+str(e)) from e
 
 
-@router.post("/order/report/{email_to}")
-async def send_report(email_to: str):
+@router.post("/order/report/{email}/{file_type}", tags=['Orders Admin'])
+async def send_report(email: str, file_type: str):
     """Generates all orders report for admin and sends via email"""
     try:
         query = "select * from order_data limit 5"
         df = get_dataframe(query=query)
-        send_order_report(df=df, email_to=email_to)
+        send_order_report(df=df, file_type=file_type, email=email)
 
     except Exception as e:
         raise HTTPException(

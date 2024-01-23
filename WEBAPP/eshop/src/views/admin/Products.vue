@@ -42,6 +42,7 @@ async function setUp(){
 
 <template>
   <div class="admin-data-container">
+    <div class="dashboard-title">Products</div>
     <AdminTable :columns="tableColums" @get-data=""></AdminTable>
   </div>
 </template>

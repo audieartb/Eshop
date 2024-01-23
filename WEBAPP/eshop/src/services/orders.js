@@ -26,7 +26,6 @@ export async function getOrderDetails(orderId) {
   return await axios.get(ADMINURL + `/${orderId}`, { headers: HEADERS })
 }
 export async function getOrders(filters) {
-  console.log(filters)
   return await axios.post(ADMINURL, filters, { headers: HEADERS })
 }
 
@@ -54,6 +53,6 @@ export async function getTopSellers() {
   return await axios.get(ADMINURL + '/daily/popular', { headers: HEADERS })
 }
 
-export async function sendReport(email) {
-  return await axios.post(ADMINURL + '/report/' + email, { headers: HEADERS })
+export async function sendReport(email, fileType) {
+  return await axios.post(ADMINURL + `/report/${email}/${fileType}`, { headers: HEADERS })
 }

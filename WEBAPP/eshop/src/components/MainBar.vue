@@ -25,6 +25,9 @@ function logout(){
   <div>
     <v-app-bar>
       <div><router-link to="/"> <div class="text-h4 ml-5 store-title">What are you buying?</div></router-link></div>
+      <div v-if="adminStore.is_authenticated" class="ml-5">
+        <div class="text-h8 rounded-sm admin-msg px-2" >Logged in as admin</div>
+      </div>
       <template v-slot:append>
         <v-btn v-if="adminStore.is_authenticated" @click="logout" >log out</v-btn>
         <v-tooltip text="Order History">
@@ -43,9 +46,8 @@ function logout(){
           <v-list>
             <v-list-item>
               <v-list-item-title><manage-cart-dialog></manage-cart-dialog></v-list-item-title>
-
               <v-list-item-title
-                ><v-btn>
+                ><v-btn class="menu-btn">
                   <router-link to="/cart">Checkout</router-link>
                 </v-btn></v-list-item-title
               >
@@ -56,3 +58,10 @@ function logout(){
     </v-app-bar>
   </div>
 </template>
+<style scoped>
+.admin-msg{
+  color: aliceblue;
+  background-color: red;
+  font-weight: 500;
+}
+</style>

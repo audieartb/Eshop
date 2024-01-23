@@ -9,7 +9,6 @@ const tableData = ref([])
 
 async function setUp() {
   let data = await getLastDay()
-  console.log(data.data)
   tableData.value = JSON.parse(data.data)
 }
 
