@@ -1,8 +1,7 @@
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
 from starlette_admin.contrib.sqla import ModelView
-import random
 from dateutil.relativedelta import relativedelta
 
 def test_date():

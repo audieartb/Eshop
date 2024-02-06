@@ -1,6 +1,6 @@
-from typing import Annotated, Union
+from typing import Annotated
 from datetime import datetime, timedelta
-from app.models import AdminUserBase, AdminUser
+from app.models import AdminUser
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel.ext.asyncio.session import AsyncSession

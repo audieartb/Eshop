@@ -62,7 +62,7 @@ export const useCartStore = defineStore('cart', {
           price: item.price,
           img: 'https://cdn.vuetifyjs.com/images/cards/docks.jpg',
           title: item.title
-        }
+        } 
         this.carts[this.currentCart].items[item.barcode] = newItem
       } else {
         this.carts[this.currentCart].items[item.barcode].qty++

@@ -3,14 +3,9 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from app.items import routes as ItemRoutes
 from app.orders import routes as OrderRoutes
-from app.admin import order_routes as AdminOrderRoutes
-from app.admin import item_routes as AdminItemRoutes
-from app.admin import user_routes as UserRoutes
-from starlette_admin.contrib.sqla import Admin, ModelView
-from starlette_admin.views import BaseModelView
-from app.models import Item, Order, OrderDetail
-from app.db import engine
-
+from app.admin import admin_order as AdminOrderRoutes
+from app.admin import admin_item as AdminItemRoutes
+from app.admin import admin_user as UserRoutes
 
 
 origins = [
@@ -18,13 +13,6 @@ origins = [
 ]
 
 app = FastAPI()
-
-class ChartView(BaseModelView):
-    pass
-
-star_admin = Admin(engine, title="Admin Panel")
-star_admin.add_view(ModelView(Item))
-star_admin.add_view(OrderDetail(Order))
 
 app.add_middleware(
     CORSMiddleware,

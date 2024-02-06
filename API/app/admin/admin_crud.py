@@ -6,12 +6,12 @@ from sqlalchemy import func
 from datetime import datetime
 
 
-class AdminItemCrud:
+class AdminCrud:
 
     @classmethod
     async def get_orders(cls, skip: int | None, limit: int | None,
-                         order_by: str | None, email: str| None, order_id: str| None,
-                         from_date: str| None, to_date: str| None,
+                         order_by: str | None, email: str | None, order_id: str | None,
+                         from_date: str | None, to_date: str | None,
                          session: AsyncSession, order_asc:  bool = False):
         stmt = select(Order).offset(skip).limit(limit)
 
@@ -37,9 +37,9 @@ class AdminItemCrud:
         pass
 
     @classmethod
-    async def get_order_by_id(cls, id: str, session: AsyncSession):
+    async def get_order_by_id(cls, order_id: str, session: AsyncSession):
 
-        checkdata = await session.exec(select(Order).where(Order.order_id == id))
+        checkdata = await session.exec(select(Order).where(Order.order_id == order_id))
         order = checkdata.first()
 
         if (order):
@@ -66,13 +66,12 @@ class AdminItemCrud:
         await session.refresh(db_item)
 
         return db_item
-    
 
     @classmethod
     async def delete_item(cls, barcode: str, session: AsyncSession):
         res = await session.exec(select(Item).where(Item.barcode == barcode))
         db_item = res.first()
-        if( not db_item):
+        if (not db_item):
             raise HTTPException(
                 status_code=404, detail="Item does not exist in database"
             )
@@ -81,7 +80,7 @@ class AdminItemCrud:
         return
 
     @classmethod
-    async def create_item(cls, item : Item, session: AsyncSession):
+    async def create_item(cls, item: Item, session: AsyncSession):
         """adds single item to database"""
         db_item = Item.from_orm(item)
         session.add(db_item)

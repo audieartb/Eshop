@@ -2,18 +2,18 @@ from fastapi import Depends, HTTPException, APIRouter
 from sqlmodel.ext.asyncio.session import AsyncSession
 from dateutil.relativedelta import relativedelta
 import pandas as pd
-from .admin_crud import AdminItemCrud
+from .admin_crud import AdminCrud
 from app.db import PDENGINE
-from app.db import getSession, cache
+from app.db import getSession
 import os
 from datetime import datetime, timedelta
 from app.models import SearchFilters
 from ..utils.email_utils import send_order_report
-import pickle
 
 router = APIRouter()
 
 def check_file_exists(filename: str):
+    """For development only, to avoid querying database"""
     if not os.path.exists('db_files'):
         os.makedirs('db_files')
 
@@ -26,6 +26,7 @@ def check_file_exists(filename: str):
 
 
 def get_dataframe(query: str = None, filename: str = ''):
+    """Currently configured for development, checks on local data"""
     query_all = 'select * from order_data'
     filename = "orders"
 
@@ -47,13 +48,13 @@ def get_dataframe(query: str = None, filename: str = ''):
 @router.get("/order/count", tags=['Orders Admin'])
 async def order_count(session: AsyncSession = Depends(getSession)):
     """Returns Total Count of Orders to calculate total pages"""
-    return await AdminItemCrud.get_order_count(session=session)
+    return await AdminCrud.get_order_count(session=session)
 
 
 @router.post("/order", tags=['Orders Admin'])
 async def get_orders(filters: SearchFilters, session: AsyncSession = Depends(getSession)):
     """Gets orders for Admin and applies filters and pagination"""
-    return await AdminItemCrud.get_orders(order_by=filters.order_by,
+    return await AdminCrud.get_orders(order_by=filters.order_by,
                                                 order_asc=filters.order_asc,
                                                 skip=filters.skip,
                                                 limit=filters.limit,
@@ -126,7 +127,7 @@ async def get_order_details(order_id=str, session: AsyncSession = Depends(getSes
     """queries order by id and returns details"""
     try:
         
-        items = await AdminItemCrud.get_order_by_id(id=order_id, session=session)
+        items = await AdminCrud.get_order_by_id(order_id=order_id, session=session)
         return items
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

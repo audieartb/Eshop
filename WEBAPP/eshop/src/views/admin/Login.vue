@@ -22,6 +22,8 @@ async function sendLogin() {
     })
     .catch((err) => {
       alert('error loggin in ')
+      form_data.delete('username')
+      form_data.delete('password')
     })
 }
 </script>

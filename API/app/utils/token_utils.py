@@ -1,6 +1,9 @@
 from itsdangerous import URLSafeTimedSerializer, BadTimeSignature, SignatureExpired
 import os
 
+
+
+
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 token_algo = URLSafeTimedSerializer(
@@ -8,6 +11,7 @@ token_algo = URLSafeTimedSerializer(
 
 
 def token(email: str, order_id: str):
+    """Creates a token for email confirmation"""
     to_dump = {
         "email": email,
         "order_id": order_id
@@ -18,6 +22,7 @@ def token(email: str, order_id: str):
 
 
 def verify_token(token: str):
+    """Validates token from email link"""
     try:
         data = token_algo.loads(token, max_age=18000)
         
