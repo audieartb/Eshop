@@ -1,5 +1,5 @@
 from app.db import getSession, cache
-from app.models import OrderCreate
+from app.models import OrderCreate, OrderBase
 from app.orders.crud import OrderCrud
 from app.items.crud import ItemCrud
 import pickle
@@ -27,7 +27,6 @@ async def create_order(order: OrderCreate, session: AsyncSession = Depends(getSe
 
         temp_id = OrderCrud.generate_order_id()
         order.temp_id = temp_id
-        order.created_at = datetime.now()
         redis_client.set(f"order_{temp_id}", pickle.dumps(order))
         send_order_confirmation(email=order.email, order_id=order.temp_id)
         return

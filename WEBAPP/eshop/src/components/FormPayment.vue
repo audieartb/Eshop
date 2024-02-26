@@ -46,20 +46,23 @@ function processItems() {
       barcode: store.justItems[item].barcode,
       qty: store.justItems[item].qty,
       price: store.justItems[item].price,
-      created_at: '2024-01-23T11:23:33.737Z',
-      temp_id: ''
-
     })
   }
+  store.form_data.temp_id = ''
   store.form_data.items = justItems
 }
 
 async function processPayment() {
-  alert(`payment successful`)
   form_data['total'] = store.carts[store.currentCart].total.toFixed(2)
-  store.deleteCart(store.currentCart)
+  console.log(form_data.value)
   const res = await postOrder(form_data.value)
-  return router.push({ path: '/complete' })
+  if (res.status != 200) {
+    alert('Error processing order')
+    console.log(res)
+  }
+  alert(`payment successful`)
+  store.deleteCart(store.currentCart)
+  router.push({ path: '/complete' })
 }
 
 onMounted(() => {
@@ -84,7 +87,7 @@ onMounted(() => {
               {{ item.title }} x {{ item.qty }} : {{ item.price * item.qty }}</v-card-text
             >
           </v-card-item>
-          <v-card-text>{{ store.carts[store.currentCart].total }}</v-card-text>
+          <v-card-text>{{ store.carts[store.currentCart].total.toFixed(2) }}</v-card-text>
         </v-card>
       </v-col>
       <v-col class="col">

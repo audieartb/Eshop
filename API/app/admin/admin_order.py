@@ -35,15 +35,16 @@ def get_dataframe(query: str = None, filename: str = ''):
         df.to_csv(path_or_buf=f'db_files/{filename}.csv')
         return df
 
-    ctime = os.path.getctime(f'db_files/{filename}.csv')
-    ctimestamp = datetime.fromtimestamp(ctime)
-    if ((ctimestamp + timedelta(days=4)) > datetime.now()):
-        df = pd.read_csv(f'db_files/{filename}.csv')
-        return df
-    else:
-        df = pd.read_sql(query, con=PDENGINE)
-        df.to_csv(path_or_buf=f'db_files/{filename}.csv')
-        return df
+    return pd.read_sql(query, con=PDENGINE)
+    # ctime = os.path.getctime(f'db_files/{filename}.csv')
+    # ctimestamp = datetime.fromtimestamp(ctime)
+    # if ((ctimestamp + timedelta(seconds=1)) > datetime.now()):
+    #     df = pd.read_csv(f'db_files/{filename}.csv')
+    #     return df
+    # else:
+    #     df = pd.read_sql(query, con=PDENGINE)
+    #     df.to_csv(path_or_buf=f'db_files/{filename}.csv')
+    #     return df
 
 @router.get("/order/count", tags=['Orders Admin'])
 async def order_count(session: AsyncSession = Depends(getSession)):
@@ -95,7 +96,7 @@ async def get_order_daily():
 @router.get("/order/top_customers", tags=['Orders Admin'])
 async def get_top_customers():
     """Top 10 Customers"""
-    query = "select email, count(total) as total from order_data group by email order by total DESC limit 10"
+    query = "SELECT email, count(order_id) as total from order_data group by email order by total DESC limit 10"
     df = get_dataframe(query=query)
     return df.to_json(orient="records")
 
@@ -103,7 +104,7 @@ async def get_top_customers():
 @router.get("/order/top_orders", tags=['Orders Admin'])
 async def get_top_amount():
     """Top 10 highest amount orders"""
-    query = 'select order_id, email, total, address, status, delivery_type, created_at from order_data order by total DESC limit 10'
+    query = 'select order_id, email, total from order_data order by total DESC limit 10'
     df = get_dataframe(query=query)
     return df.to_json(orient="records")
 

@@ -60,6 +60,7 @@ class OrderBase(SQLModel):
     status: str
     total: float
     delivery_type: str
+   
 
 
 class Order(OrderBase, table=True):
@@ -80,10 +81,8 @@ class OrderDetail(ModelView):
 
 class OrderCreate(OrderBase):
     """Order creation must include at least 1 item"""
+    temp_id : str = Field(default=None)
     items: List[OrderItem]
-    temp_id : str
-    created_at : datetime
-
 
 ########### OrderXItem SQLModel ###########
 class ItemOrderLink(SQLModel, table=True):

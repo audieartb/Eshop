@@ -33,6 +33,6 @@ async def getSession() -> AsyncSession:
 
 def cache():
     return redis.Redis(
-        host='redis-14382.c304.europe-west1-2.gce.cloud.redislabs.com',
-        port=14382,
-        password='tSFkCrMd0BLvleVfjC2Ih9hI64RyaysF')
+        host='redis-16088.c304.europe-west1-2.gce.cloud.redislabs.com',
+        port=16088,
+        password='SAA4wqHPbBRSmuTs0ClBz6NZrJSAh1AW')

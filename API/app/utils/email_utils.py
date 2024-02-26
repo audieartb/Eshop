@@ -29,11 +29,13 @@ def send_order_confirmation(email: str, order_id: str):
 
     return None
 
+
 async def send_order_history(email: str, items_list):
-    history =  format_email(email_to=email,items_list=items_list )
+    history = format_email(email_to=email, items_list=items_list)
     with smtplib.SMTP_SSL(EMAIL_DOMAIN, EMAIL_PORT) as server:
         server.login(EMAIL_USER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_USER, EMAIL_USER, history)
+
 
 def format_email(items_list, email_to):
     """Builds HTML for Order Details Email """
@@ -42,7 +44,15 @@ def format_email(items_list, email_to):
     msg['From'] = "audie.artavia19@gmail.com"
     msg['To'] = email_to
     rows = ''
+    order_ctrl = None
     for i in items_list:
+
+        if not order_ctrl:
+            order_ctrl = i.order_id
+        elif order_ctrl != i.order_id:
+            order_ctrl = i.order_id
+            rows += '<tr><td colspan="4"><hr></td><tr>'
+
         rows += f'<tr><td>{i.order_id}</td><td>{i.title}</td><td>{i.price}</td><td>{i.qty}</td></tr>'
 
     table = f'<table><thead><tr><th colspan="1">Order Id</th><th colspan="1">Item</th><th colspan="1">Price</th><th colspan="1">Qty</th></tr></thead><tbody>{rows}</tbody></table>'
@@ -65,17 +75,20 @@ def format_confirmation_email(url, email_to):
     msg.attach(body)
     return msg.as_string()
 
-def send_order_report(df: pd.DataFrame, file_type : str, email: str):
-   
-    
+
+def send_order_report(df: pd.DataFrame, file_type: str, email: str):
+
     file_name = 'OrdersReport-'+datetime.now().strftime("%m%d%Y-%H%M%S")
 
-    compression_opts = dict(method='zip', archive_name = f'{file_name}.{file_type}')
-    if(file_type == 'json'):
-        df.to_json(f'{file_name}.zip', index=False,compression=compression_opts, orient="records")
+    compression_opts = dict(
+        method='zip', archive_name=f'{file_name}.{file_type}')
+    if (file_type == 'json'):
+        df.to_json(f'{file_name}.zip', index=False,
+                   compression=compression_opts, orient="records")
     else:
-        df.to_csv(f'{file_name}.zip', index=False,compression=compression_opts)
-    
+        df.to_csv(f'{file_name}.zip', index=False,
+                  compression=compression_opts)
+
     msg = MIMEMultipart()
     msg['Subject'] = f'Order Report for {datetime.now().strftime("%m%d%Y-%H%M%S")}'
     msg['From'] = "audie.artavia19@gmail.com"
@@ -83,12 +96,12 @@ def send_order_report(df: pd.DataFrame, file_type : str, email: str):
     attachment = MIMEBase('application', 'zip')
     attachment.set_payload(open(f'{file_name}.zip', 'rb').read())
     encoders.encode_base64(attachment)
-    attachment.add_header('Content-Disposition', 'attachment', filename=f'{file_name}.zip')
+    attachment.add_header('Content-Disposition',
+                          'attachment', filename=f'{file_name}.zip')
     msg.attach(attachment)
-
 
     with smtplib.SMTP_SSL(EMAIL_DOMAIN, EMAIL_PORT) as server:
         server.login(EMAIL_USER, EMAIL_PASSWORD)
         server.sendmail(EMAIL_USER, EMAIL_USER, msg.as_string())
-        
+
     return None

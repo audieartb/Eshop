@@ -8,10 +8,10 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlmodel import SQLModel, select
 from app.db import getSession
-
+import os
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="admin/token")
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+SECRET_KEY_AUTH = os.environ.get("SECRET_KEY_AUTH")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -39,7 +39,7 @@ def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY_AUTH, algorithm=ALGORITHM)
     return encoded_jwt
 
 
@@ -73,7 +73,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
                                          detail="Invalid Authentication Credentials",
                                          headers={"WWW-Authenticate": "Bearer"},)
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        payload = jwt.decode(token, SECRET_KEY_AUTH, algorithms=ALGORITHM)
         username: str = payload.get("sub")
         if username is None:
             raise credential_exception

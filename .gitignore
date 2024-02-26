@@ -1,5 +1,8 @@
 storedata.json
 API/venv
+API/app_test
+API/db_files/
+.env
 __pycache__
 
 *.log
@@ -11,3 +14,4 @@ dist
 
 storedata.json
 alembic.ini
+.csv
